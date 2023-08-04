@@ -1,0 +1,19 @@
+body{
+    background-color:#f1b0b7;
+}
+
+.input-group {
+justify-content: center;    
+margin-bottom:20px;
+}
+
+.input-group input
+{
+    
+     max-width: 255px;
+}
+.input-group select
+{
+    
+     max-width: 155px;
+}
