@@ -2,10 +2,12 @@ package inz.model;
 
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
-public class Users {
+public class User {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,8 +24,17 @@ public class Users {
     @Column(name = "email")
     private String email;
 
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "User_Group",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "group_id") }
+    )
+    Set<Group> groups = new HashSet<>();
 
-    public Users() {
+
+
+    public User() {
 
     }
 
@@ -57,6 +68,14 @@ public class Users {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
     }
 
 

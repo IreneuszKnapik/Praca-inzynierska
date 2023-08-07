@@ -1,6 +1,6 @@
 package inz.util;
 
-import inz.model.Users;
+import inz.model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class Parser {
@@ -9,11 +9,11 @@ public class Parser {
         return new BCryptPasswordEncoder();
     }
 
-    public static boolean isCorrectPasswd(Users user, String passwd ){
+    public static boolean isCorrectPasswd(User user, String passwd ){
         return bCryptPasswordEncoder().matches(passwd, user.getPassword());
     }
 
-    public static boolean isCorrectPasswd2(Users user, String passwd){
+    public static boolean isCorrectPasswd2(User user, String passwd){
        if(user.getUsername().equals("admin") && passwd.equals("admin1")){
            return true;
        }

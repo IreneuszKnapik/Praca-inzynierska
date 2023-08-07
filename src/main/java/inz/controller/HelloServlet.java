@@ -2,7 +2,7 @@ package inz.controller;
 
 
 import inz.dao.UserDao;
-import inz.model.Users;
+import inz.model.User;
 import inz.util.Parser;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -28,9 +28,9 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     public void init(){
         userDao = new UserDao();
-        Users admin2 = userDao.getUserByUsername("admin2");
+        User admin2 = userDao.getUserByUsername("admin2");
         if(admin2 == null){
-            admin2 = new Users();
+            admin2 = new User();
             admin2.setUsername("admin2");
             Parser.bCryptPasswordEncoder().encode("admin2");
             admin2.setPassword(Parser.bCryptPasswordEncoder().encode("admin2"));
@@ -53,11 +53,11 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session = request.getSession();
-        Users currentUser = (Users) session.getAttribute("currentUser");
+        User currentUser = (User) session.getAttribute("currentUser");
         if (currentUser == null) {
 
 
-            currentUser = new Users();
+            currentUser = new User();
             session.setAttribute("currentUser", currentUser);
         }
 
@@ -68,6 +68,8 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         response.setContentType("text/html");
 
         RequestDispatcher dispatcher = null;
+
+
         dispatcher = request.getRequestDispatcher("index.jsp");
         dispatcher.forward(request, response);
 
@@ -84,7 +86,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         RequestDispatcher dispatcher = null;
 
-        Users usernameCheck = userDao.getUserByUsername(username);
+        User usernameCheck = userDao.getUserByUsername(username);
         System.out.print("username retrieved from db:" +usernameCheck.getUsername() + "\n");
         if(usernameCheck != null) {
             System.out.print("username " + username +"not null \n");
@@ -111,14 +113,14 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session =request.getSession();
-        Users currentUser =(Users) session.getAttribute("currentUser");
+        User currentUser =(User) session.getAttribute("currentUser");
 
         response.setContentType("text/html");
 
         if(currentUser==null) {
 
 
-            currentUser= new Users();
+            currentUser= new User();
             session.setAttribute("currentUser",currentUser);
         }
 

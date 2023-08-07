@@ -1,22 +1,23 @@
 package inz.dao;
 
-import inz.model.User;
+import inz.model.Group;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.util.List;
 
-public class UserDao{
+public class GroupDao {
 
-    public void saveUser(User user) {
+    public void saveGroup(Group group) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // start a transaction
             transaction = session.beginTransaction();
             // save the user object
-            session.save(user);
+            session.save(group);
             // commit transaction
             transaction.commit();
         } catch (Exception e) {
@@ -28,29 +29,30 @@ public class UserDao{
     }
 
 
-    public User getUserByUsername(String user_username) {
-        System.out.print("Trying to do getUserByUsername for username " + user_username);
+    public List<Group> getGroupsByUserId(Integer user_id) {
+
         Session session = null;
-        User user = null;
+        List<Group> groups = null;
+
 
         try {
-            System.out.print("Trying to get user " + user_username);
+
             session = HibernateUtil.getSessionFactory().openSession();
-            //System.out.print(session.toString());
 
 
 
-           //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
-
-            Query<User> query = session.createQuery("from User u where u.username = :username");
+            //Query<Group> query = session.createQuery("select u from User u join u.groups where u.id = :user_id");
             //System.out.print(query.toString());
-            query.setParameter("username", user_username);
+
 
             //System.out.print(query.list());
 
-            user = query.uniqueResult();
-            //System.out.println(user.toString());
-            Hibernate.initialize(user);
+            Query<Group> query= session.createQuery("select g from Group g inner join g.users u WHERE u.id=:user_id");
+            query.setParameter("user_id",user_id);
+
+            groups = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(groups);
         }
 
         catch (Exception e){
@@ -64,10 +66,9 @@ public class UserDao{
         }
 
 
-        return user;
+        return groups;
 
     }
-
 
 
 }

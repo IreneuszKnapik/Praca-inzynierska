@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Strona główna - Ireneusz Knapik praca inżynierska</title>
-
+    <%-- <style><%@include file="/static/css/landing.css"%></style> --%>
 </head>
 <body>
 <h1><p>Praca dyplomowa</p></h1>

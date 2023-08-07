@@ -1,6 +1,7 @@
 package inz.util;
 
-import inz.model.Users;
+import inz.model.Group;
+import inz.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -31,9 +32,10 @@ public class HibernateUtil {
 
                 configuration.setProperties(settings);
 
-                configuration.addPackage("inz.model.Users");
-                configuration.addAnnotatedClass(Users.class);
-
+                //configuration.addPackage("inz.model.User");
+                //configuration.addPackage("inz.model.Group");
+                configuration.addAnnotatedClass(User.class);
+                configuration.addAnnotatedClass(Group.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();

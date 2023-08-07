@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <title>Logowanie</title>
 
-    <link href="static/css/login.css" rel="stylesheet" />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
 
 </head>
 

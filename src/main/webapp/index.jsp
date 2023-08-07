@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Ireneusz Knapik - praca inżynierska</title>
+    <%-- <style><%@include file="/static/css/login.css"%></style>--%>
+    <style><%@include file="/static/css/bootstrap-4.0.0-dist/css/bootstrap.min.css"%></style>
+    <%--
+    <link href="${pageContext.request.contextPath}/static/css/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
-    <link href="/resources/login.css" rel="stylesheet">
-
-
+    <link href="${pageContext.request.contextPath}/static/css/bootstrap-4.0.0-dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+--%>
 
 </head>
 
