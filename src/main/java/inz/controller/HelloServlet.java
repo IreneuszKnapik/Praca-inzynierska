@@ -94,7 +94,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             if(Parser.isCorrectPasswd(usernameCheck, password)){
                 session.setAttribute("currentUser", usernameCheck);
                 System.out.print("username " + username +"correct \n");
-                dispatcher = request.getRequestDispatcher("WEB-INF/templates/main.jsp");
+                dispatcher = request.getRequestDispatcher("index.jsp?webpage=main");
             }
             else{
                 errors +="Nieprawidłowe Hasło<br/> ";

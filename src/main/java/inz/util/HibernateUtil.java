@@ -1,6 +1,8 @@
 package inz.util;
 
 import inz.model.Group;
+import inz.model.TaskGroupTemplate;
+import inz.model.TaskTemplate;
 import inz.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -36,6 +38,8 @@ public class HibernateUtil {
                 //configuration.addPackage("inz.model.Group");
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Group.class);
+                configuration.addAnnotatedClass(TaskGroupTemplate.class);
+                configuration.addAnnotatedClass(TaskTemplate.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();

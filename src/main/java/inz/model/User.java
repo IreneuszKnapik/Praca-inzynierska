@@ -32,6 +32,15 @@ public class User {
     )
     Set<Group> groups = new HashSet<>();
 
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "User_TaskGroupTemplate",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "group_id") }
+    )
+    Set<Group> taskTemplateGroups = new HashSet<>();
+
+
 
 
     public User() {
