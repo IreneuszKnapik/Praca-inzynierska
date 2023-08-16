@@ -1,7 +1,9 @@
 package inz.controller;
 
 
+import inz.dao.TaskDao;
 import inz.dao.UserDao;
+import inz.model.Task;
 import inz.model.User;
 import inz.util.Parser;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -35,6 +37,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             Parser.bCryptPasswordEncoder().encode("admin2");
             admin2.setPassword(Parser.bCryptPasswordEncoder().encode("admin2"));
             admin2.setEmail("admin2.example.com");
+            admin2.setType(3);
             userDao.saveUser(admin2);
         }
 
@@ -61,18 +64,56 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             session.setAttribute("currentUser", currentUser);
         }
 
-
-        String getAction = request.getParameter("getaction");
-        if (getAction == null) getAction = "";
-
         response.setContentType("text/html");
+
+        String action = request.getParameter("action");
+
+        if(action==null){
+            RequestDispatcher dispatcher = null;
+            dispatcher = request.getRequestDispatcher("index.jsp");
+            dispatcher.forward(request, response);
+        }
+        else if(action.equals("login")){
+
+            login(request,response);
+
+        }
+        else if(action.equals("saveAnswer")){
+
+            saveAnswer(request,response);
+
+        }
+
+
+
+
+
+
+    }
+
+    private void saveAnswer(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
+
+        System.out.print("saveAnswer " + request +" /n");
+
+        session = request.getSession();
+        TaskDao taskDao = new TaskDao();
+        Task task = new Task();
+
+        task.setId(Integer.parseInt(request.getParameter("taskId")));
+        task.setAnswer(request.getParameter("answer"));
+
+
+        String targetTask = request.getParameter("targetTask");
+        String targetTaskGroup = request.getParameter("targetTaskGroup");
+
+
+        taskDao.updateTask(task);
 
         RequestDispatcher dispatcher = null;
 
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskGroup&taskGroup="+targetTaskGroup+"&taskId="+targetTask);
 
-        dispatcher = request.getRequestDispatcher("index.jsp");
         dispatcher.forward(request, response);
-
 
     }
 
@@ -86,39 +127,39 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         RequestDispatcher dispatcher = null;
 
-        User usernameCheck = userDao.getUserByUsername(username);
-        System.out.print("username retrieved from db:" +usernameCheck.getUsername() + "\n");
-        if(usernameCheck != null) {
-            System.out.print("username " + username +"not null \n");
+        User userCheck = userDao.getUserByUsername(username);
 
-            if(Parser.isCorrectPasswd(usernameCheck, password)){
-                session.setAttribute("currentUser", usernameCheck);
-                System.out.print("username " + username +"correct \n");
-                dispatcher = request.getRequestDispatcher("index.jsp?webpage=main");
-            }
-            else{
-                errors +="Nieprawidłowe Hasło<br/> ";
-                dispatcher = request.getRequestDispatcher("login.jsp");
-            }
-
-
+        if(userCheck != null && Parser.isCorrectPasswd(userCheck, password) && userCheck.getType() != 0){
+            session.setAttribute("currentUser", userCheck);
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=main");
         }
         else{
-            errors +="Nieprawidłowy Login<br/>";
-            dispatcher = request.getRequestDispatcher("login.jsp");
+
+            if(userCheck == null){
+                errors +="Nieprawidłowy Login<br/>";
+            }
+            if(!Parser.isCorrectPasswd(userCheck, password)){
+                errors +="Nieprawidłowe hasło<br/> ";
+            }
+
+            if(userCheck.getType() == 0){
+                errors +="Konto jest zablokowane przez administratora<br/> ";
+            }
+
+
+            dispatcher = request.getRequestDispatcher("WEB-INF/templates/loginErrors.jsp?errors="+errors);
         }
 
         dispatcher.forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        session =request.getSession();
+
         User currentUser =(User) session.getAttribute("currentUser");
 
         response.setContentType("text/html");
 
         if(currentUser==null) {
-
 
             currentUser= new User();
             session.setAttribute("currentUser",currentUser);
@@ -130,6 +171,11 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         else if(action.equals("login")){
 
             login(request,response);
+
+        }
+        else if(action.equals("saveAnswer")){
+
+            saveAnswer(request,response);
 
         }
 

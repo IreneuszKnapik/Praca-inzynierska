@@ -15,7 +15,7 @@
 
 <html>
 <head>
-    <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <title>Admin - <%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
 <p>Zalogowany jako:<%=currentUser.getUsername() %></p>
@@ -51,9 +51,6 @@
 
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskTemplates">Szablony testów</a></button>
-</div>
-<div class="form-group">
-    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskGroups">Testy</a></button>
 </div>
 
 </body>

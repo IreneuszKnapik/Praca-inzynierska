@@ -22,8 +22,9 @@ public class Parser {
        }
     }
 
-    public static String parse(String input, String pattern)
+    public static String parse(String input)
     {
+        String pattern="register;login;landing;taskTemplates;main;admin,loginErrors;taskGroup;taskGroups";
 
         String output = "landing";
         String[] pages = pattern.split(";");

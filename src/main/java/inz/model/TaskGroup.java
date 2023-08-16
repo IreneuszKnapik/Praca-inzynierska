@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="taskgrouptemplates")
+@Table(name="taskgroup")
 
-public class TaskGroupTemplate {
+public class TaskGroup {
 
 
     @Id
@@ -30,7 +30,7 @@ public class TaskGroupTemplate {
         this.name = name;
     }
 
-    @ManyToMany(mappedBy = "taskGroupTemplates")
+    @ManyToMany(mappedBy = "taskGroups")
     private Set<User> users = new HashSet<>();
 
     @Column(name = "name")

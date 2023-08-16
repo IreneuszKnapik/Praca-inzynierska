@@ -48,12 +48,13 @@ public class UserDao{
 
             //System.out.print(query.list());
 
-            user = query.uniqueResult();
             //System.out.println(user.toString());
             Hibernate.initialize(user);
+            user = query.uniqueResult();
         }
 
         catch (Exception e){
+
             e.printStackTrace();
         }
 

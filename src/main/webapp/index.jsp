@@ -16,7 +16,7 @@
 
 <%
     String webpage =request.getParameter("webpage");
-    webpage =  Parser.parse(webpage,"register;login;landing;taskTemplates;main");
+    webpage =  Parser.parse(webpage);
 %>
 
 <body>

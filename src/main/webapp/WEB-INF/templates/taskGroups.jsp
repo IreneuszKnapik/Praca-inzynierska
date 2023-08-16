@@ -1,15 +1,24 @@
 <%@ page import="inz.dao.GroupDao" %>
 <%@ page import="inz.model.Group" %>
-<%@ page import="java.util.ArrayList" %>
+
 <%@ page import="java.util.List" %>
+<%@ page import="inz.dao.TaskTemplateDao" %>
+
+<%@ page import="inz.model.TaskGroupTemplate" %>
+<%@ page import="inz.dao.TaskDao" %>
+<%@ page import="inz.model.TaskGroup" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="currentUser" class="inz.model.User" scope="session"/>
 
 <%
-
     GroupDao groupDao = new GroupDao();
     List<Group> groups=null;
     groups = groupDao.getGroupsByUserId(currentUser.getId());
+
+    TaskDao taskDao = new TaskDao();
+    List<TaskGroup> taskGroup=null;
+    taskGroup = taskDao.getTaskGroupByUserId(currentUser.getId());
+
 %>
 
 
@@ -20,41 +29,34 @@
 <body>
 <p>Zalogowany jako:<%=currentUser.getUsername() %></p>
 
-<%if(groups.isEmpty()){%>
-<h2 class="text-center">Użytkownik nie należy do żadnej grupy</h2>
+<%if(taskGroup.isEmpty()){%>
+<h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>
 <%
 } else{ %>
 
 <table id="groups" class="table table-active">
     <tr>
         <th scope="col" class="text-center">Id</th>
-        <th scope="col" class="text-center">Nazwa grupy</th>
+        <th scope="col" class="text-center">Nazwa testu</th>
     </tr>
-    <% for(int i=0;i<groups.size();i++) { %>
+    <% for(int i=0;i<taskGroup.size();i++) { %>
         <tr>
             <td>
-                <%=groups.get(i).getId()%>
+                <%=taskGroup.get(i).getId()%>
             </td>
 
         </tr>
-        <tr>
-            <td>
-<%-- <%=groups.get(i).getName()%> --%>
-    <%=groups.get(i).getName()%>
-</td>
+    <tr>
+        <td>
+            <a href="index.jsp?webpage=taskGroup&taskGroup=<%=taskGroup.get(i).getId()%>&taskId=0"><%=taskGroup.get(i).getName()%></a>
+        </td>
 
-</tr>
+    </tr>
+
 <%}%>
 </table>
 
 <%}%>
-
-<div class="form-group">
-    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskTemplates">Szablony testów</a></button>
-</div>
-<div class="form-group">
-    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskGroups">Testy</a></button>
-</div>
 
 </body>
 </html>

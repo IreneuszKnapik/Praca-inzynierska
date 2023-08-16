@@ -24,6 +24,23 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    @Column(name = "type")
+    private Integer type;
+
+    //0 is blocked user
+    //1 is regular user - solves tests
+    //2 is creator - also creates tests and sees answers
+    //3 is admin - can access everything
+
+
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
             name = "User_Group",
@@ -38,7 +55,15 @@ public class User {
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "group_id") }
     )
-    Set<Group> taskTemplateGroups = new HashSet<>();
+    Set<TaskGroupTemplate> taskGroupTemplates = new HashSet<>();
+
+    @ManyToMany(cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "User_TaskGroup",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "group_id") }
+    )
+    Set<TaskGroup> taskGroups = new HashSet<>();
 
 
 
