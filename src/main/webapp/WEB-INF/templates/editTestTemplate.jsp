@@ -5,17 +5,15 @@
 <%@ page import="inz.dao.TaskTemplateDao" %>
 
 <%@ page import="inz.model.TaskGroupTemplate" %>
+<%@ page import="inz.dao.TestDao" %>
+<%@ page import="inz.model.TestTemplate" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="currentUser" class="inz.model.User" scope="session"/>
 
 <%
-    GroupDao groupDao = new GroupDao();
-    List<Group> groups=null;
-    groups = groupDao.getGroupsByUserId(currentUser.getId());
-
-    TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
-    List<TaskGroupTemplate> taskGroupTemplates=null;
-    taskGroupTemplates = taskTemplateDao.getTaskGroupByUserId(currentUser.getId());
+    TestDao testDao = new TestDao();
+    List<TestTemplate> testTemplates=null;
+    testTemplates = testDao.getTestTemplates();
 
 %>
 
@@ -27,8 +25,8 @@
 <body>
 <p>Zalogowany jako:<%=currentUser.getUsername() %></p>
 
-<%if(taskGroupTemplates.isEmpty()){%>
-<h2 class="text-center">Użytkownik nie ma udostępnionych żadnych szablonów testów</h2>
+<%if(testTemplates.isEmpty()){%>
+<h2 class="text-center">W bazie nie ma żadnych szablonów testów</h2>
 <%
 } else{ %>
 
@@ -37,16 +35,16 @@
         <th scope="col" class="text-center">Id</th>
         <th scope="col" class="text-center">Nazwa szablonu testu</th>
     </tr>
-    <% for(int i=0;i<taskGroupTemplates.size();i++) { %>
+    <% for(int i=0;i<testTemplates.size();i++) { %>
         <tr>
             <td>
-                <%=taskGroupTemplates.get(i).getId()%>
+                <%=testTemplates.get(i).getId()%>
             </td>
 
         </tr>
     <tr>
         <td>
-            <%=taskGroupTemplates.get(i).getName()%>
+            <%=testTemplates.get(i).getName()%>
         </td>
 
     </tr>

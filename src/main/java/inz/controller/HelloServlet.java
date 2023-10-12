@@ -2,8 +2,10 @@ package inz.controller;
 
 
 import inz.dao.TaskDao;
+import inz.dao.TestDao;
 import inz.dao.UserDao;
 import inz.model.Task;
+import inz.model.TestTemplate;
 import inz.model.User;
 import inz.util.Parser;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -18,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 @WebServlet("/index")
@@ -83,13 +87,49 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             saveAnswer(request,response);
 
         }
+        else if(action.equals("saveAnswerWithSubmit")){
 
+            saveAnswerWithSubmit(request,response);
 
+        }
+        else if(action.equals("addTestTemplate")){
+
+            try {
+                addTestTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
 
 
 
 
     }
+
+    private void addTestTemplate(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException {
+
+        System.out.print("addTestTemplate" + request +" /n");
+        session = request.getSession();
+        TestDao testDao= new TestDao();
+        TestTemplate testTemplate = new TestTemplate();
+
+        testTemplate.setName((request.getParameter("name")));
+        testTemplate.setDescription((request.getParameter("description")));
+        testTemplate.setDue_date(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(request.getParameter("due_date")));
+        testTemplate.setAllowed_attempts(Integer.parseInt(request.getParameter("allowed_attempts")));
+
+        testDao.saveTestTemplate(testTemplate);
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=testTemplates");
+
+        dispatcher.forward(request, response);
+
+
+    }
+
 
     private void saveAnswer(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
 
@@ -104,17 +144,39 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
 
         String targetTask = request.getParameter("targetTask");
-        String targetTaskGroup = request.getParameter("targetTaskGroup");
+        String targetTest = request.getParameter("targetTest");
 
 
         taskDao.updateTask(task);
 
         RequestDispatcher dispatcher = null;
 
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskGroup&taskGroup="+targetTaskGroup+"&taskId="+targetTask);
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&testId="+targetTest+"&taskId="+targetTask);
 
         dispatcher.forward(request, response);
 
+    }
+
+    private void saveAnswerWithSubmit(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+        //System.out.print("saveAnswerWithSubmit " + request +" /n");
+
+        session = request.getSession();
+        TaskDao taskDao = new TaskDao();
+        Task task = new Task();
+
+        task.setId(Integer.parseInt(request.getParameter("taskId")));
+        task.setAnswer(request.getParameter("answer"));
+
+        Integer user_id =  Integer.parseInt(request.getParameter("user"));
+        taskDao.submitTest(task,user_id);
+
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskGroups");
+
+        dispatcher.forward(request, response);
     }
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -153,6 +215,8 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         dispatcher.forward(request, response);
     }
 
+
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         User currentUser =(User) session.getAttribute("currentUser");
@@ -176,6 +240,20 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         else if(action.equals("saveAnswer")){
 
             saveAnswer(request,response);
+
+        }
+        else if(action.equals("saveAnswerWithSubmit")){
+
+            saveAnswerWithSubmit(request,response);
+
+        }
+        else if(action.equals("addTestTemplate")){
+
+            try {
+                addTestTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
         }
 

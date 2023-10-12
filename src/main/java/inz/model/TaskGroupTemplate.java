@@ -1,8 +1,6 @@
 package inz.model;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name="taskgrouptemplates")
@@ -30,8 +28,6 @@ public class TaskGroupTemplate {
         this.name = name;
     }
 
-    @ManyToMany(mappedBy = "taskGroupTemplates")
-    private Set<User> users = new HashSet<>();
 
     @Column(name = "name")
     private String name;

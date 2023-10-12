@@ -28,11 +28,14 @@ public class HibernateUtil {
                 settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
                 settings.put(Environment.HBM2DDL_AUTO, "validate");
+                //settings.put(Environment.HBM2DDL_AUTO, "validate");
 
                 configuration.setProperties(settings);
 
                 //configuration.addPackage("inz.model.User");
                 //configuration.addPackage("inz.model.Group");
+                configuration.addAnnotatedClass(Test.class);
+                configuration.addAnnotatedClass(TestTemplate.class);
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Group.class);
                 configuration.addAnnotatedClass(TaskGroupTemplate.class);

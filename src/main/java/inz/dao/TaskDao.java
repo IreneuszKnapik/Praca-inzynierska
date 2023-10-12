@@ -2,12 +2,14 @@ package inz.dao;
 
 import inz.model.Task;
 import inz.model.TaskGroup;
+import inz.model.Test;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -50,6 +52,54 @@ public class TaskDao {
             }
             e.printStackTrace();
         }
+    }
+
+    public void updateTaskGroup(TaskGroup TaskGroup) {
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the user object
+            session.update(TaskGroup);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    private TaskGroup getTaskGroupById(int group_id) {
+
+        Session session = null;
+        TaskGroup taskGroup = null;
+
+        try{
+            session = HibernateUtil.getSessionFactory().openSession();
+            Query<TaskGroup> query= session.createQuery("select t from TaskGroup t WHERE t.id =:group_id");
+            query.setParameter("group_id",group_id);
+            System.out.print(group_id);
+            taskGroup = query.uniqueResult();
+            //System.out.println(query.toString());
+            Hibernate.initialize(taskGroup);
+
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return taskGroup;
     }
 
     public Task getTaskById(Integer task_id){
@@ -168,6 +218,83 @@ public class TaskDao {
 
     }
 
+    public List<Task> getTasksByTest(Integer test_id, Integer user_id) {
+
+        Session session = null;
+        List<Task> tasks = null;
+
+        try {
+            //System.out.print("Trying to get tasks for " + taskGroupUsername);
+            session = HibernateUtil.getSessionFactory().openSession();
+            //System.out.print(session.toString());
+
+
+
+            //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
+
+            Query<Task> query= session.createQuery("select t from Task t WHERE t.user_id=:user_id AND t.test_id=:test_id");
+            query.setParameter("test_id",test_id);
+            query.setParameter("user_id",user_id);
+
+            tasks = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(tasks);
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return tasks;
+    }
+
+    public List<Task> getTasksByTestTemplate(Integer testtemplate_id, Integer user_id) {
+
+        Session session = null;
+        List<Task> tasks = null;
+
+        try {
+            //System.out.print("Trying to get tasks for " + taskGroupUsername);
+            session = HibernateUtil.getSessionFactory().openSession();
+            //System.out.print(session.toString());
+
+
+
+            //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
+
+            Query<Task> query= session.createQuery("select t from Task t WHERE t.user_id=:user_id AND t.taskgroup_id=( select n from TaskGroup where n.testtemplate_id=:testtemplate_id)");
+            query.setParameter("testtemplate_id",testtemplate_id);
+            query.setParameter("user_id",user_id);
+
+            tasks = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(tasks);
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return tasks;
+    }
+
+
     public List<TaskGroup> getTaskGroupByUserId(Integer user_id) {
 
         Session session = null;
@@ -206,7 +333,146 @@ public class TaskDao {
         return taskGroups;
 
     }
+    public void startTest(Integer test_template_id, Integer user_id) {
+
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            Test newTest = new Test();
+            newTest.setTest_template_id(test_template_id);
+            newTest.setTaskgroup_id(42);
+            newTest.setUser_id(user_id);
+            newTest.setStart_date(new Timestamp(System.currentTimeMillis()));
+            session.save(newTest);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (transaction != null) {
+                //--------------
+                transaction.rollback();
+            }
+
+        }
+        
+    }
+
+    public void submitTest(Task task, Integer user_id) {
+
+
+        Transaction transaction = null;
+
+        Integer taskgroup_id = null;
+        Integer newTestId = null;
+
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+
+            Integer task_id =task.getId();
+
+            Query<Task> saveLastTask_query= session.createQuery("select t from Task t WHERE t.id =:task_id");
+            saveLastTask_query.setParameter("task_id",task_id);
+            System.out.print(task_id);
+            taskgroup_id = saveLastTask_query.uniqueResult().getTaskgroup_id();
+            System.out.println( "taskgroup_id:" + taskgroup_id +'\n');
 
 
 
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                //--------------
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+        transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            Test newTest = new Test();
+            System.out.println( "taskgroup_id:" + taskgroup_id +'\n');
+            System.out.println( "user_id:" + user_id +'\n');
+
+//--------------
+            newTest.setTaskgroup_id(taskgroup_id);
+            newTest.setUser_id(user_id);
+            newTest.setSubmit_date(new Timestamp(System.currentTimeMillis()));
+            session.save(newTest);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (transaction != null) {
+                //--------------
+                transaction.rollback();
+            }
+
+        }
+        transaction = null;
+
+
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            Query <Test> getTheNewTestRecord_query = session.createQuery("from Test t WHERE t.taskgroup_id=:taskgroup_id AND t.user_id=:user_id order by start_date desc");
+            getTheNewTestRecord_query.setParameter("taskgroup_id",taskgroup_id);
+            getTheNewTestRecord_query.setParameter("user_id",user_id);
+            getTheNewTestRecord_query.setMaxResults(1);
+            Test newTestFromDB = null;
+
+            newTestFromDB = (Test) getTheNewTestRecord_query.uniqueResult();
+            Hibernate.initialize(newTestFromDB);
+
+            newTestId = newTestFromDB.getId();
+            System.out.print("newTestId:" + newTestId);
+
+            System.out.println("Getting the created new test");
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+
+        transaction = null;
+
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+            Query<Task> saveAnswers_query= session.createQuery("update Task t set t.submitted = 1, t.test_id=:test_id WHERE t.taskgroup_id=:taskgroup_id");
+            saveAnswers_query.setParameter("taskgroup_id",taskgroup_id);
+            saveAnswers_query.setParameter("test_id",newTestId);
+
+            //System.out.println(saveAnswers_query.toString());
+            saveAnswers_query.executeUpdate();
+
+
+            System.out.println("Updated test, saving test!");
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+
+    }
 }

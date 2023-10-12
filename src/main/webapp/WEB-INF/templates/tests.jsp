@@ -1,24 +1,18 @@
 <%@ page import="inz.dao.GroupDao" %>
-<%@ page import="inz.model.Group" %>
 
 <%@ page import="java.util.List" %>
 <%@ page import="inz.dao.TaskTemplateDao" %>
 
-<%@ page import="inz.model.TaskGroupTemplate" %>
 <%@ page import="inz.dao.TaskDao" %>
-<%@ page import="inz.model.TaskGroup" %>
+<%@ page import="inz.dao.TestDao" %>
+<%@ page import="inz.model.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="currentUser" class="inz.model.User" scope="session"/>
 
 <%
-    GroupDao groupDao = new GroupDao();
-    List<Group> groups=null;
-    groups = groupDao.getGroupsByUserId(currentUser.getId());
-
-    TaskDao taskDao = new TaskDao();
-    List<TaskGroup> taskGroup=null;
-    taskGroup = taskDao.getTaskGroupByUserId(currentUser.getId());
-
+    TestDao testDao = new TestDao();
+    List<TestTemplate> testTemplates = null;
+    testTemplates = testDao.getTestTemplatesByUserId(currentUser.getId());
 %>
 
 
@@ -29,7 +23,7 @@
 <body>
 <p>Zalogowany jako:<%=currentUser.getUsername() %></p>
 
-<%if(taskGroup.isEmpty()){%>
+<%if(testTemplates.isEmpty()){%>
 <h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>
 <%
 } else{ %>
@@ -39,16 +33,16 @@
         <th scope="col" class="text-center">Id</th>
         <th scope="col" class="text-center">Nazwa testu</th>
     </tr>
-    <% for(int i=0;i<taskGroup.size();i++) { %>
+    <% for(int i=0;i<testTemplates.size();i++) { %>
         <tr>
             <td>
-                <%=taskGroup.get(i).getId()%>
+                <%=testTemplates.get(i).getId()%>
             </td>
 
         </tr>
     <tr>
         <td>
-            <a href="index.jsp?webpage=taskGroup&taskGroup=<%=taskGroup.get(i).getId()%>&taskId=0"><%=taskGroup.get(i).getName()%></a>
+            <a href="index.jsp?webpage=test&test=<%=testDao.getTestByUserAndTemplate(currentUser.getId(),testTemplates.get(i).getId())%>&taskId=0"><%=testTemplates.get(i).getName()%></a>
         </td>
 
     </tr>

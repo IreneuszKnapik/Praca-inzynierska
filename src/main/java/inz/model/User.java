@@ -40,7 +40,6 @@ public class User {
     //2 is creator - also creates tests and sees answers
     //3 is admin - can access everything
 
-
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
             name = "User_Group",
@@ -51,22 +50,11 @@ public class User {
 
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(
-            name = "User_TaskGroupTemplate",
+            name = "user_testtemplate",
             joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "group_id") }
+            inverseJoinColumns = { @JoinColumn(name = "testtemplate_id") }
     )
-    Set<TaskGroupTemplate> taskGroupTemplates = new HashSet<>();
-
-    @ManyToMany(cascade = { CascadeType.ALL })
-    @JoinTable(
-            name = "User_TaskGroup",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "group_id") }
-    )
-    Set<TaskGroup> taskGroups = new HashSet<>();
-
-
-
+    Set<Group> testTemplates = new HashSet<>();
 
     public User() {
 
@@ -102,14 +90,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Set<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(Set<Group> groups) {
-        this.groups = groups;
     }
 
 

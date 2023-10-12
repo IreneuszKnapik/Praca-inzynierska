@@ -21,9 +21,9 @@
     TaskDao taskDao = new TaskDao();
 
     List<Task> tasks;
-    String taskGroup = request.getParameter("taskGroup");
+    String testId = request.getParameter("testId");
 
-    tasks = taskDao.getTasksByTaskGroup(Integer.parseInt(taskGroup),currentUser.getId());
+    tasks = taskDao.getTasksByTest(Integer.parseInt(testId),currentUser.getId());
 
     Integer taskId;
     if(request.getParameter("taskId").equals(null)){
@@ -48,8 +48,15 @@
 
     let taskId;
 
-    function sendRequest () {
-        let baseUrl = "index?action=saveAnswer&taskId=<%=task.getId()%>&targetTaskGroup=<%=taskGroup%>" + "&targetTask=" + this.taskId;
+    function saveAnswerWithSubmit () {
+        let baseUrl = "index?action=saveAnswerWithSubmit&taskId=<%=task.getId()%>&targetTest=<%=testId%>" + "&targetTask=" + this.taskId+"&user=<%=currentUser.getId()%>";
+        let form = document.getElementById("testForm");
+        form.action = baseUrl;
+        form.submit();
+    }
+
+    function saveAnswer () {
+        let baseUrl = "index?action=saveAnswer&taskId=<%=task.getId()%>&targetTest=<%=testId%>" + "&targetTask=" + this.taskId;
         let form = document.getElementById("testForm");
         form.action = baseUrl;
         form.submit();
@@ -68,7 +75,7 @@
 </head>
 <body>
 <p>Zalogowany jako:<%=currentUser.getUsername() %></p>
-<p>Id testu:<%=taskGroup%> </p>
+<p>Id testu:<%=testId%> </p>
 
 <% if(task.equals(null)){%>
 <h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>
@@ -79,11 +86,11 @@
 
     <div class="testNav">
         <% for(int i=0;i<tasks.size();i++) { %>
-            <button style="display:inline-block;margin:5px;width:50px;height:50px"  class="btn" onclick="setTaskId(<%=i%>);sendRequest()"><%=i+1%></button>
+            <button style="display:inline-block;margin:5px;width:50px;height:50px"  class="btn" onclick="setTaskId(<%=i%>);saveAnswer()"><%=i+1%></button>
         <%}%>
     </div>
 
-    <form id="testForm" action="index?action=saveAnswer&taskId=<%=task.getId()%>&targetTaskGroup=<%=taskGroup%>&targetTask=0" method="post" enctype="multipart/form-data">
+    <form id="testForm" action="index?action=saveAnswer&taskId=<%=task.getId()%>&targetTest=<%=testId%>&targetTask=0" method="post" enctype="multipart/form-data">
 
         <table id="groups" class="table table-active">
             <tr>
@@ -109,7 +116,8 @@
             <textarea name="answer" class="h-100 w-100" form="testForm">
 <%=answer%>
             </textarea>
-        <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);sendRequest()" form ="testForm" class="btn">Zapisz</button>
+        <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);saveAnswer()" form ="testForm" class="btn">Zapisz</button>
+        <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);saveAnswerWithSubmit()" form ="testForm" class="btn">Wyślij test do oceny</button>
 
     </form>
 </div>

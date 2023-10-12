@@ -1,7 +1,5 @@
 package inz.model;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
 
 @Entity
@@ -50,12 +48,10 @@ public class TaskTemplate {
     @Column(name = "score")
     private int score;
 
-    @Column(name = "description")
-    @Type(type = "text")
+    @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
-    @Type(type = "text")
-    @Column(name = "answer")
+    @Column(name = "answer",columnDefinition = "TEXT")
     private String answer;
 
 
