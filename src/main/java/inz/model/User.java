@@ -40,7 +40,7 @@ public class User {
     //2 is creator - also creates tests and sees answers
     //3 is admin - can access everything
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(
             name = "User_Group",
             joinColumns = { @JoinColumn(name = "user_id") },
@@ -48,7 +48,7 @@ public class User {
     )
     Set<Group> groups = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(
             name = "user_testtemplate",
             joinColumns = { @JoinColumn(name = "user_id") },

@@ -20,6 +20,7 @@ public class TestDao {
             // start a transaction
             transaction = session.beginTransaction();
             // save the user object
+            System.out.println(testTemplate.toString());
             session.save(testTemplate);
             // commit transaction
             transaction.commit();
@@ -151,7 +152,7 @@ public class TestDao {
         return newestTestFromDB;
     }
 
-    public List<TestTemplate> getTestTemplates() {
+    public List<TestTemplate> getAllTestTemplates() {
         Session session = null;
         List<TestTemplate> testTemplates = null;
 
@@ -181,4 +182,11 @@ public class TestDao {
         return testTemplates;
 
     }
+
+    public void addTaskTemplateToTestTemplate(Integer testTemplateId, String taskTemplateId) {
+        Session session = null;
+
+
+    }
+
 }

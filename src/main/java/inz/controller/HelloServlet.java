@@ -2,6 +2,7 @@ package inz.controller;
 
 
 import inz.dao.TaskDao;
+import inz.dao.TaskTemplateDao;
 import inz.dao.TestDao;
 import inz.dao.UserDao;
 import inz.model.Task;
@@ -119,7 +120,30 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         testTemplate.setDue_date(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(request.getParameter("due_date")));
         testTemplate.setAllowed_attempts(Integer.parseInt(request.getParameter("allowed_attempts")));
 
+        String[] tasks = request.getParameter( "taskChanges").split(",");
+
+        System.out.print("--------\n");
+        System.out.println("tasks: " + tasks.toString());
+        System.out.print("--------\n");
+
+
+
+
+
         testDao.saveTestTemplate(testTemplate);
+        System.out.print("testTemplateId: " + testTemplate.getId());
+
+        TaskTemplateDao taskTemplateDao= new TaskTemplateDao();
+        for (int i = 0; i < tasks.length; i++) {
+            System.out.println("adding testTemplateId: " + tasks[i]);
+            System.out.print("TaskTemplateDao.getTaskTemplateById: " + TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])).toString());
+            testTemplate.addTaskTemplate( TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])));
+        }
+
+        testDao.saveTestTemplate(testTemplate);
+
+
+
 
         RequestDispatcher dispatcher = null;
 

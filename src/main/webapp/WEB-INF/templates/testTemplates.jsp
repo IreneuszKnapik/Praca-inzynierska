@@ -13,7 +13,7 @@
 <%
     TestDao testDao = new TestDao();
     List<TestTemplate> testTemplates=null;
-    testTemplates = testDao.getTestTemplates();
+    testTemplates = testDao.getAllTestTemplates();
 
 %>
 

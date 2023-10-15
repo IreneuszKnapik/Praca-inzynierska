@@ -2,6 +2,7 @@ package inz.dao;
 
 import inz.model.Task;
 import inz.model.TaskGroup;
+import inz.model.TaskTemplate;
 import inz.model.Test;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
@@ -100,6 +101,80 @@ public class TaskDao {
 
 
         return taskGroup;
+
+
+    }
+
+    public List<TaskTemplate> getAllTaskTemplates(){
+        Session session = null;
+        List<TaskTemplate> taskTemplates = null;
+
+
+        try {
+            //System.out.print("Trying to get tasks for " + taskGroupUsername);
+            session = HibernateUtil.getSessionFactory().openSession();
+            //System.out.print(session.toString());
+
+
+
+            //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
+
+            Query<TaskTemplate> query= session.createQuery("from TaskTemplate t");
+
+            taskTemplates = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(taskTemplates);
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return taskTemplates;
+    }
+
+    public List<Task> getAllTasks(){
+        Session session = null;
+        List<Task> tasks = null;
+
+
+        try {
+            //System.out.print("Trying to get tasks for " + taskGroupUsername);
+            session = HibernateUtil.getSessionFactory().openSession();
+            //System.out.print(session.toString());
+
+
+
+            //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
+
+            Query<Task> query= session.createQuery("from Task t");
+
+            tasks = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(tasks);
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return tasks;
     }
 
     public Task getTaskById(Integer task_id){
