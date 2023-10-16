@@ -1,9 +1,10 @@
 package inz.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name="testtemplates")
@@ -39,20 +40,20 @@ public class TestTemplate {
     private Set<User> users = new HashSet<>();
 
 
-    public Set<TaskTemplate> getTasks() {
+    public Map<Integer,TaskTemplate> getTasks() {
         return tasks;
     }
 
-    public void setTasks(Set<TaskTemplate> tasks) {
+    public void setTasks(HashMap<Integer,TaskTemplate> tasks) {
         this.tasks = tasks;
     }
 
     public void addTaskTemplate(TaskTemplate taskTemplate) {
-        this.tasks.add(taskTemplate);
+        this.tasks.put(taskTemplate.getId(),taskTemplate);
         taskTemplate.getTestTemplates().add(this);
     }
     public void removeTaskTemplate(TaskTemplate taskTemplate) {
-        this.tasks.remove(taskTemplate);
+        this.tasks.remove(taskTemplate.getId());
         taskTemplate.getTestTemplates().remove(this);
 
     }
@@ -74,10 +75,14 @@ public class TestTemplate {
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(
             name = "testtemplates_tasktemplates",
-            joinColumns = { @JoinColumn(name = "tasktemplate_id") },
-            inverseJoinColumns = { @JoinColumn(name = "testtemplate_id") }
+            joinColumns = { @JoinColumn(name = "testtemplate_id") },
+            inverseJoinColumns = { @JoinColumn(name = "tasktemplate_id") }
     )
-    private Set<TaskTemplate> tasks = new HashSet<>();
+    @Fetch(FetchMode.JOIN)
+    @javax.persistence.MapKey(name = "id")
+    private Map<Integer,TaskTemplate> tasks = new HashMap<Integer,TaskTemplate>();
+
+
 
     public String getDescription() {
         return description;
@@ -86,9 +91,6 @@ public class TestTemplate {
     public void setDescription(String description) {
         this.description = description;
     }
-
-
-
 
 
     public Integer getId() {

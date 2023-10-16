@@ -6,6 +6,7 @@ import inz.dao.TaskTemplateDao;
 import inz.dao.TestDao;
 import inz.dao.UserDao;
 import inz.model.Task;
+import inz.model.TaskTemplate;
 import inz.model.TestTemplate;
 import inz.model.User;
 import inz.util.Parser;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 
 @WebServlet("/index")
@@ -59,54 +61,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
                 .addResourceLocations("/static/bootstrap-4.0.0-dist/css/");
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
-        if (currentUser == null) {
 
-
-            currentUser = new User();
-            session.setAttribute("currentUser", currentUser);
-        }
-
-        response.setContentType("text/html");
-
-        String action = request.getParameter("action");
-
-        if(action==null){
-            RequestDispatcher dispatcher = null;
-            dispatcher = request.getRequestDispatcher("index.jsp");
-            dispatcher.forward(request, response);
-        }
-        else if(action.equals("login")){
-
-            login(request,response);
-
-        }
-        else if(action.equals("saveAnswer")){
-
-            saveAnswer(request,response);
-
-        }
-        else if(action.equals("saveAnswerWithSubmit")){
-
-            saveAnswerWithSubmit(request,response);
-
-        }
-        else if(action.equals("addTestTemplate")){
-
-            try {
-                addTestTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-
-
-
-    }
 
     private void addTestTemplate(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException {
 
@@ -130,7 +85,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
 
 
-        testDao.saveTestTemplate(testTemplate);
+
         System.out.print("testTemplateId: " + testTemplate.getId());
 
         TaskTemplateDao taskTemplateDao= new TaskTemplateDao();
@@ -141,6 +96,90 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         }
 
         testDao.saveTestTemplate(testTemplate);
+
+
+
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=testTemplates");
+
+        dispatcher.forward(request, response);
+
+
+    }
+
+    private void updateTestTemplate(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException {
+
+        System.out.print("updateTestTemplate" + request +" /n");
+        session = request.getSession();
+        TestDao testDao= new TestDao();
+        TaskTemplateDao taskTemplateDao= new TaskTemplateDao();
+
+        TestTemplate testTemplate = testDao.getTestTemplateById(Integer.parseInt(request.getParameter("testTemplateID")));
+
+        testTemplate.setName((request.getParameter("name")));
+        testTemplate.setDescription((request.getParameter("description")));
+        String due_date = request.getParameter("due_date");
+        System.out.print("due_date: " + due_date);
+        testTemplate.setDue_date(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(due_date));
+        testTemplate.setAllowed_attempts(Integer.parseInt(request.getParameter("allowed_attempts")));
+
+        String[] tasks = request.getParameter( "taskChanges").split(",");
+        if(tasks[0].equals("0") ){
+
+        }
+        else{
+            System.out.print("--------\n");
+            System.out.println("tasks: " + Arrays.toString(tasks));
+            System.out.print("--------\n");
+
+            System.out.println("testTemplateId: " + testTemplate.getId());
+
+
+
+            for (int i = 0; i < tasks.length; i++) {
+                System.out.println("taskID being flipped: " + Integer.parseInt(tasks[i]));
+                TaskTemplate taskTemplate = TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i]));
+
+                if( testTemplate.getTasks().containsKey(taskTemplate.getId())){
+                    testTemplate.removeTaskTemplate(taskTemplate);
+                }
+                else{
+                    testTemplate.addTaskTemplate(taskTemplate);
+                }
+
+        /*
+                for ( TaskTemplate t : testTemplate.getTasks()) {
+
+                    System.out.println("taskID being checked: " + taskTemplate.getId());
+                    System.out.println("taskID from the test template being compared" + t.getId());
+
+                    if ( t.getId() == taskTemplate.getId() ){
+
+                        isTaskInSet = true;
+                    }
+                }
+                System.out.println("check result: " + isTaskInSet);
+                if( isTaskInSet == false){
+                    testTemplate.addTaskTemplate(taskTemplate);
+                }
+                else{
+                    System.out.println("taskID being removed: " + taskTemplate.getId());
+                    testTemplate.removeTaskTemplate(taskTemplate);
+                }
+
+                //System.out.println("adding testTemplateId: " + tasks[i]);
+                //System.out.print("TaskTemplateDao.getTaskTemplateById: " + TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])).toString());
+
+         */
+
+            }
+        }
+
+        //testDao= new TestDao();
+        //session = request.getSession();
+        testDao.updateTestTemplate(testTemplate);
 
 
 
@@ -239,7 +278,63 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         dispatcher.forward(request, response);
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
 
+
+            currentUser = new User();
+            session.setAttribute("currentUser", currentUser);
+        }
+
+        response.setContentType("text/html");
+
+        String action = request.getParameter("action");
+
+        if(action==null){
+            RequestDispatcher dispatcher = null;
+            dispatcher = request.getRequestDispatcher("index.jsp");
+            dispatcher.forward(request, response);
+        }
+        else if(action.equals("login")){
+
+            login(request,response);
+
+        }
+        else if(action.equals("saveAnswer")){
+
+            saveAnswer(request,response);
+
+        }
+        else if(action.equals("saveAnswerWithSubmit")){
+
+            saveAnswerWithSubmit(request,response);
+
+        }
+        else if(action.equals("addTestTemplate")){
+
+            try {
+                addTestTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else if(action.equals("updateTestTemplate")){
+
+            try {
+                updateTestTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+
+
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -275,6 +370,15 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
             try {
                 addTestTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else if(action.equals("updateTestTemplate")){
+
+            try {
+                updateTestTemplate(request,response);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

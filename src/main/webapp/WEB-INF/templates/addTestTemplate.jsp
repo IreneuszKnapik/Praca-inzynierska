@@ -62,10 +62,10 @@
             <span><i class="icon icon-user"></i></span>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control item" name="name" placeholder="Nazwa testu" required="required">
+            <input type="text" class="form-control item" name="name" placeholder="Nazwa testu" required="required" >
         </div>
         <div class="form-group">
-            <textarea placeholder="Opis testu" name="description" class="h-100 w-100" form="addTest-form"></textarea>
+            <textarea placeholder="Opis testu" name="description" class="h-100 w-100" form="addTestform"></textarea>
         </div>
         <div class="form-group">
             <input type="datetime-local" class="form-control item" name="due_date"  required="required">

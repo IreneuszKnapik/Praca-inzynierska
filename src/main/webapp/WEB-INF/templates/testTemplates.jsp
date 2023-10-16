@@ -51,7 +51,7 @@
                 <%=testTemplates.get(i).getDescription()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=addTestTemplate"></a>Dodaj test</button>
+                <button class="btn btn-block "><a href="index.jsp?webpage=editTestTemplate&testTemplateId=<%=testTemplates.get(i).getId()%>">Edytuj test</a></button>
             </td>
         </tr>
 

@@ -1,5 +1,6 @@
 package inz.dao;
 
+import inz.model.TaskTemplate;
 import inz.model.Test;
 import inz.model.TestTemplate;
 import inz.util.HibernateUtil;
@@ -8,7 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.util.List;
+import java.util.*;
 
 public class TestDao {
 
@@ -22,6 +23,26 @@ public class TestDao {
             // save the user object
             System.out.println(testTemplate.toString());
             session.save(testTemplate);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updateTestTemplate(TestTemplate testTemplate) {
+
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the user object
+            session.update(testTemplate);
             // commit transaction
             transaction.commit();
         } catch (Exception e) {
@@ -183,10 +204,71 @@ public class TestDao {
 
     }
 
-    public void addTaskTemplateToTestTemplate(Integer testTemplateId, String taskTemplateId) {
-        Session session = null;
+    public TestTemplate getTestTemplateById(Integer testtemplate_id) {
+        TestTemplate testTemplate = null;
+        Transaction transaction = null;
 
+        try (Session session = HibernateUtil.getSessionFactory().openSession()){
+
+            transaction = session.beginTransaction();
+
+            Query<TestTemplate> query= session.createQuery("FROM TestTemplate t WHERE t.id=:testtemplate_id ");
+
+            //"from TestTemplate t WHERE t.id IN ( select testtemplate_id from user where g.user_id=:user_id ) AND allowed_attempts != 0");
+            query.setParameter("testtemplate_id",testtemplate_id);
+
+            testTemplate = query.uniqueResult();
+            Hibernate.initialize(testTemplate.getTasks());
+            Hibernate.initialize(testTemplate.toString());
+
+            transaction.commit();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return testTemplate;
 
     }
 
+    public List<String> getTaskIDfromTestTemplate(Integer testtemplate_id) {
+        TestTemplate testTemplate = null;
+
+        List<String> taskIDs = new ArrayList<>();
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            Query<TestTemplate> query= session.createQuery("from TestTemplate t WHERE t.id=:testtemplate_id");
+
+            //"from TestTemplate t WHERE t.id IN ( select testtemplate_id from user where g.user_id=:user_id ) AND allowed_attempts != 0");
+            query.setParameter("testtemplate_id",testtemplate_id);
+
+            testTemplate = query.uniqueResult();
+            System.out.println(query.toString());
+            Hibernate.initialize(testTemplate);
+            System.out.println(testTemplate.toString());
+
+            Map<Integer,TaskTemplate> taskTemplates = testTemplate.getTasks();
+
+            for (Integer i : taskTemplates.keySet()) {
+                taskIDs.add(String.valueOf(i));
+            }
+
+            System.out.println(taskIDs);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+
+        return taskIDs;
+    }
 }

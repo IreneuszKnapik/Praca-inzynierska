@@ -1,5 +1,8 @@
 package inz.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,11 +73,12 @@ public class TaskTemplate {
             joinColumns = { @JoinColumn(name = "tasktemplate_id") },
             inverseJoinColumns = { @JoinColumn(name = "testtemplate_id") }
     )
+    @Fetch(FetchMode.JOIN)
     Set<TestTemplate> testTemplates = new HashSet<>();
 
     public void addTestTemplate(TestTemplate testTemplate) {
         this.testTemplates.add(testTemplate);
-        testTemplate.getTasks().add(this);
+        testTemplate.getTasks().put(this.getId(),this);
     }
 
     @Override
@@ -84,13 +88,13 @@ public class TaskTemplate {
                 ", score=" + score +
                 ", description='" + description + '\'' +
                 ", answer='" + answer + '\'' +
-                ", testTemplates=" + testTemplates +
+                ", testTemplates=" + testTemplates.size() +
                 '}';
     }
 
     public void removeTestTemplate(TestTemplate testTemplate) {
         this.testTemplates.remove(testTemplate);
-        testTemplate.getTasks().remove(this);
+        testTemplate.getTasks().remove(this.getId());
     }
 
 

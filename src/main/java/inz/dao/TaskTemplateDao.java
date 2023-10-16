@@ -16,18 +16,21 @@ public class TaskTemplateDao {
 
     public static TaskTemplate getTaskTemplateById(Integer taskTemplateID) {
 
-        Session session = null;
+
         TaskTemplate taskTemplate = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession();){
+
             // start a transaction
-            transaction = session.beginTransaction();
-            Query<TaskTemplate> query= session.createQuery("from TaskTemplate t WHERE t.id=:taskTemplateID");
+            Transaction transaction = session.beginTransaction();
+
+            Query<TaskTemplate> query= session.createQuery("FROM TaskTemplate t WHERE t.id=:taskTemplateID");
             query.setParameter("taskTemplateID",taskTemplateID);
 
-            //Hibernate.initialize(taskTemplate);
+
             taskTemplate = query.uniqueResult();
+            Hibernate.initialize(taskTemplate.getTestTemplates());
+            Hibernate.initialize(taskTemplate.toString());
+
 
             transaction.commit();
         }
