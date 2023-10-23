@@ -1,15 +1,15 @@
 package inz.dao;
 
-import inz.model.TaskTemplate;
-import inz.model.Test;
-import inz.model.TestTemplate;
+import inz.model.*;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class TestDao {
 
@@ -71,57 +71,32 @@ public class TestDao {
     }
 
 
-    public List<Test> getTestsByUserId(Integer user_id) {
-
-        Session session = null;
-        List<Test> tests = null;
-
-
-        try {
-
-            session = HibernateUtil.getSessionFactory().openSession();
-
-            Query<Test> query= session.createQuery("select t from Test WHERE t.user_id=:user_id");
-            query.setParameter("user_id",user_id);
-
-            tests = query.list();
-            System.out.println(query.toString());
-            Hibernate.initialize(tests);
-        }
-
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
-        }
-
-
-        return tests;
-
-    }
-
-    //record testDescription(String name, String description) {}
-
     public List<TestTemplate> getTestTemplatesByUserId(Integer user_id) {
-        Session session = null;
-        List<TestTemplate> testTemplates = null;
 
+        Session session = null;
+        List<Group> groups = null;
+        List<TestTemplate> testTemplates = null;
+        List<Integer> groups_ids = new ArrayList<>();
 
         try {
 
             session = HibernateUtil.getSessionFactory().openSession();
 
-            Query<TestTemplate> query= session.createQuery("select t from TestTemplate t join t.users u WHERE u.id=:user_id");
+            Query<Group> getGroupsQuery= session.createQuery("select g from Group g join g.users u WHERE u.id=:user_id");
+            getGroupsQuery.setParameter("user_id",user_id);
+            groups = getGroupsQuery.list();
+            Hibernate.initialize(groups);
 
-            //"from TestTemplate t WHERE t.id IN ( select testtemplate_id from user where g.user_id=:user_id ) AND allowed_attempts != 0");
-            query.setParameter("user_id",user_id);
+            for ( int i =0;i < groups.size();i++){
+                groups_ids.add(groups.get(i).getId());
+            }
 
-            testTemplates = query.list();
-            System.out.println(query.toString());
+
+            Query<TestTemplate> testTemplateQuery= session.createQuery("select distinct t from TestTemplate t JOIN t.groups g WHERE g.id in (:groups_ids)");
+            testTemplateQuery.setParameterList("groups_ids",groups_ids);
+
+            testTemplates = testTemplateQuery.list();
+            System.out.println(testTemplateQuery.toString());
             Hibernate.initialize(testTemplates);
         }
 
@@ -140,7 +115,10 @@ public class TestDao {
 
     }
 
-    public Object getTestByUserAndTemplate(Integer user_id, Integer test_template_id) {
+    //record testDescription(String name, String description) {}
+
+
+    public Test getTestByUserAndTemplate(Integer user_id, Integer test_template_id) {
 
         Session session = null;
         Test newestTestFromDB = null;
@@ -270,5 +248,39 @@ public class TestDao {
         }
 
         return taskIDs;
+    }
+
+    public void deleteTestTemplateById(int testTemplateID) {
+        Session session = null;
+        Transaction transaction = null;
+
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            TestTemplate t = session.get(TestTemplate.class,testTemplateID);
+            if(t != null){
+                session.delete(t);
+            }
+
+            transaction.commit();
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
     }
 }

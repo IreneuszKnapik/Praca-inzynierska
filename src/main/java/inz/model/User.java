@@ -48,14 +48,6 @@ public class User {
     )
     Set<Group> groups = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinTable(
-            name = "user_testtemplate",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "testtemplate_id") }
-    )
-    Set<Group> testTemplates = new HashSet<>();
-
     public User() {
 
     }

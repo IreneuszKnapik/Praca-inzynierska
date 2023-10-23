@@ -7,6 +7,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.util.List;
+
 
 public class UserDao{
 
@@ -70,5 +72,30 @@ public class UserDao{
     }
 
 
+    public List<User> getAllUsers() {
 
+        Session session = null;
+        List<User> users = null;
+
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            Query<User> query = session.createQuery("from User u");
+            users = query.list();
+            Hibernate.initialize(users);
+        }
+
+        catch (Exception e){
+
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return users;
+    }
 }

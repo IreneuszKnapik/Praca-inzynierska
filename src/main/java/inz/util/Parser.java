@@ -13,18 +13,10 @@ public class Parser {
         return bCryptPasswordEncoder().matches(passwd, user.getPassword());
     }
 
-    public static boolean isCorrectPasswd2(User user, String passwd){
-       if(user.getUsername().equals("admin") && passwd.equals("admin1")){
-           return true;
-       }
-       else{
-           return false;
-       }
-    }
 
     public static String parse(String input)
     {
-        String pattern="register;login;landing;taskTemplates;main;admin;loginErrors;test;tests;testTemplates;testTemplate;addTestTemplate;editTestTemplate;";
+        String pattern="register;login;landing;taskTemplates;main;admin;loginErrors;test;tests;testTemplates;testTemplate;addTestTemplate;editTestTemplate;users;addUser;editUser;";
 
         String output = "landing";
         String[] pages = pattern.split(";");

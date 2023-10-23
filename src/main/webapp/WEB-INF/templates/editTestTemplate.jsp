@@ -1,11 +1,7 @@
-<%@ page import="inz.dao.GroupDao" %>
-
 <%@ page import="java.util.List" %>
-<%@ page import="inz.dao.TaskTemplateDao" %>
 
-<%@ page import="inz.dao.TestDao" %>
-<%@ page import="inz.dao.TaskDao" %>
 <%@ page import="inz.model.*" %>
+<%@ page import="inz.dao.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="currentUser" class="inz.model.User" scope="session"/>
 
@@ -21,11 +17,17 @@
     testTemplate = testDao.getTestTemplateById(Integer.parseInt(testTemplateId));
     List<String> taskIDs = testDao.getTaskIDfromTestTemplate(Integer.parseInt(testTemplateId));
 
+    GroupDao groupDao= new GroupDao();
+    List<Group> groups = null;
+    groups = groupDao.getAllGroups();
+    List<String> groupIDs = groupDao.getGroupIDfromTestTemplate(Integer.parseInt(testTemplateId));
+
 %>
 
 <script>
 
     let taskChanges = [];
+    let groupChanges = [];
 
     function updateTask (event, taskid){
         //console.log(taskid);
@@ -42,13 +44,31 @@
 
 
     }
+    function updateGroup (event, groupid){
+        //console.log(taskid);
+        if (groupChanges.includes(groupid)) {
+            groupChanges.splice(groupChanges.indexOf(groupid),1);
+            //console.log(taskid + " disabled");
+            //console.log(taskChanges);
+
+        } else {
+            groupChanges.push(groupid);
+            //console.log(taskid + " enabled");
+            //console.log(taskChanges);
+        }
+
+
+    }
 
     function saveTestTemplate (){
 
         if(taskChanges.length === 0){
             taskChanges=[0];
         }
-        let baseUrl = "index?action=updateTestTemplate&user=<%=currentUser.getId()%>&testTemplateID=<%=testTemplateId%>&taskChanges="+taskChanges;
+        if(groupChanges.length === 0){
+            groupChanges=[0];
+        }
+        let baseUrl = "index?action=updateTestTemplate&user=<%=currentUser.getId()%>&testTemplateID=<%=testTemplateId%>&taskChanges="+taskChanges+"&groupChanges="+groupChanges;
         console.log(baseUrl);
         let form = document.getElementById("editTestForm");
         form.action = baseUrl;
@@ -109,6 +129,30 @@
                 </td>
                 <td>
                     <input class="form-control item" type="checkbox" name="enabledTask" onchange="updateTask(event,<%=tasks.get(i).getId()%>)" <% if (taskIDs.contains(String.valueOf(tasks.get(i).getId()))) {%>checked<%}%>>
+                </td>
+            </tr>
+            <%}%>
+        </table>
+
+        <table>
+            <tr>
+                <th scope="col" class="text-center">Id</th>
+                <th scope="col" class="text-center">Nazwa grupy</th>
+                <th scope="col" class="text-center">Opis grupy</th>
+            </tr>
+            <% for(int i=0;i<groups.size();i++) { %>
+            <tr>
+                <td>
+                    <%=groups.get(i).getId()%>
+                </td>
+                <td>
+                    <%=groups.get(i).getName()%>
+                </td>
+                <td>
+                    <%=groups.get(i).getDescription()%>
+                </td>
+                <td>
+                    <input class="form-control item" type="checkbox" name="enabledGroup" onchange="updateGroup(event,<%=groups.get(i).getId()%>)" <% if (groupIDs.contains(String.valueOf(groups.get(i).getId()))) {%>checked<%}%>>
                 </td>
             </tr>
             <%}%>

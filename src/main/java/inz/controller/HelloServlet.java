@@ -1,14 +1,8 @@
 package inz.controller;
 
 
-import inz.dao.TaskDao;
-import inz.dao.TaskTemplateDao;
-import inz.dao.TestDao;
-import inz.dao.UserDao;
-import inz.model.Task;
-import inz.model.TaskTemplate;
-import inz.model.TestTemplate;
-import inz.model.User;
+import inz.dao.*;
+import inz.model.*;
 import inz.util.Parser;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -115,6 +109,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         session = request.getSession();
         TestDao testDao= new TestDao();
         TaskTemplateDao taskTemplateDao= new TaskTemplateDao();
+        GroupDao groupDao = new GroupDao();
 
         TestTemplate testTemplate = testDao.getTestTemplateById(Integer.parseInt(request.getParameter("testTemplateID")));
 
@@ -149,6 +144,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
                     testTemplate.addTaskTemplate(taskTemplate);
                 }
 
+
         /*
                 for ( TaskTemplate t : testTemplate.getTasks()) {
 
@@ -176,6 +172,28 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
             }
         }
+        String[] groups = request.getParameter( "groupChanges").split(",");
+        if(groups[0].equals("0") ){
+
+        }
+        else {
+            System.out.print("--------\n");
+            System.out.println("groups: " + Arrays.toString(groups));
+            System.out.print("--------\n");
+
+            System.out.println("testTemplateId: " + testTemplate.getId());
+
+            for (int i = 0; i < groups.length; i++) {
+                System.out.println("groupID being flipped: " + Integer.parseInt(groups[i]));
+                Group group = groupDao.getGroupById(Integer.parseInt(groups[i]));
+
+                if (testTemplate.getGroups().containsKey(group.getId())) {
+                    testTemplate.removeGroup(group);
+                } else {
+                    testTemplate.addGroup(group);
+                }
+            }
+        }
 
         //testDao= new TestDao();
         //session = request.getSession();
@@ -191,6 +209,23 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         dispatcher.forward(request, response);
 
 
+    }
+
+    private void deleteTestTemplate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        TestDao testDao = new TestDao();
+
+        System.out.print("deleteTestTemplate" + request +" /n");
+        session = request.getSession();
+
+        testDao.deleteTestTemplateById(Integer.parseInt(request.getParameter("testTemplateID")));
+
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=testTemplates");
+
+        dispatcher.forward(request, response);
     }
 
 
@@ -278,6 +313,37 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         dispatcher.forward(request, response);
     }
 
+    private void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.print("addUser " + request +" /n");
+
+        session = request.getSession();
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String type = request.getParameter("type");
+        User newUser = null;
+
+        User userCheck = userDao.getUserByUsername(username);
+        if(userCheck == null ){
+            newUser = new User();
+            newUser.setUsername(username);
+
+            newUser.setPassword(Parser.bCryptPasswordEncoder().encode(password));
+            newUser.setEmail(email);
+            newUser.setType(Integer.parseInt(type));
+            userDao.saveUser(newUser);
+        }
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
+
+        dispatcher.forward(request, response);
+
+    }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session = request.getSession();
         User currentUser = (User) session.getAttribute("currentUser");
@@ -330,6 +396,17 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             }
 
         }
+        else if(action.equals("deleteTestTemplate")){
+
+            deleteTestTemplate(request,response);
+
+        }
+        else if(action.equals("addUser")){
+
+            addUser(request,response);
+
+        }
+
 
 
 
@@ -382,6 +459,16 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+        }
+        else if(action.equals("deleteTestTemplate")){
+
+            deleteTestTemplate(request,response);
+
+        }
+        else if(action.equals("addUser")){
+
+            addUser(request,response);
 
         }
 

@@ -76,6 +76,7 @@ public class TaskTemplate {
     @Fetch(FetchMode.JOIN)
     Set<TestTemplate> testTemplates = new HashSet<>();
 
+
     public void addTestTemplate(TestTemplate testTemplate) {
         this.testTemplates.add(testTemplate);
         testTemplate.getTasks().put(this.getId(),this);

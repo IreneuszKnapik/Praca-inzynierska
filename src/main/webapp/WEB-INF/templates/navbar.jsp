@@ -11,9 +11,12 @@
         <div class="collapse navbar-collapse" id="mainmenu">
             <ul class="navbar-nav">
                 <li class="navbar-item">
-                    <a class="nav-link" href="index.jsp?webpage=landing">Strona główna</a>
+                    <a class="nav-link" href="index.jsp?webpage=landing">O stronie</a>
                 </li>
 
+                <li class="navbar-item">
+                    <a class="nav-link" href="index.jsp?webpage=main">Menu</a>
+                </li>
 
                 <li class="navbar-item">
                     <a class="nav-link" href="index.jsp?webpage=register">Rejestracja</a>

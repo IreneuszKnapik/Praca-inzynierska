@@ -28,18 +28,6 @@ public class TestTemplate {
     private int allowed_attempts;
 
 
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
-    @ManyToMany(mappedBy = "testTemplates")
-    private Set<User> users = new HashSet<>();
-
-
     public Map<Integer,TaskTemplate> getTasks() {
         return tasks;
     }
@@ -66,7 +54,6 @@ public class TestTemplate {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", allowed_attempts=" + allowed_attempts +
-                ", users=" + users +
                 ", tasks=" + tasks.size() +
                 '}';
     }
@@ -81,6 +68,34 @@ public class TestTemplate {
     @Fetch(FetchMode.JOIN)
     @javax.persistence.MapKey(name = "id")
     private Map<Integer,TaskTemplate> tasks = new HashMap<Integer,TaskTemplate>();
+
+    public Map<Integer, Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Map<Integer, Group> groups) {
+        this.groups = groups;
+    }
+
+    public void addGroup(Group group) {
+        this.groups.put(group.getId(),group);
+        group.getTestTemplates().put(this.getId(),this);
+    }
+    public void removeGroup(Group group) {
+        this.groups.remove(group.getId());
+        group.getTestTemplates().remove(this.getId());
+
+    }
+
+    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @JoinTable(
+            name = "group_testtemplate",
+            joinColumns = { @JoinColumn(name = "testtemplate_id") },
+            inverseJoinColumns = { @JoinColumn(name = "group_id") }
+    )
+    @Fetch(FetchMode.JOIN)
+    @javax.persistence.MapKey(name = "id")
+    private Map<Integer,Group> groups = new HashMap<Integer,Group>();
 
 
 

@@ -35,15 +35,11 @@
             <td>
                 <%=groups.get(i).getId()%>
             </td>
+            <td>
+                <%=groups.get(i).getName()%>
+            </td>
 
         </tr>
-        <tr>
-            <td>
-<%-- <%=groups.get(i).getName()%> --%>
-    <%=groups.get(i).getName()%>
-</td>
-
-</tr>
 <%}%>
 </table>
 
@@ -54,6 +50,9 @@
 </div>
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=tests">Testy</a></button>
+</div>
+<div class="form-group">
+    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=users">Zarządzanie uzytkownikami</a></button>
 </div>
 
 </body>

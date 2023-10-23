@@ -17,6 +17,22 @@
 
 %>
 
+<script>
+
+    function deleteTest(testid){
+        if (confirm("Czy na pewno usunąć test" + testid) == true) {
+            let baseUrl = "index?action=deleteTestTemplate&user=<%=currentUser.getId()%>&testTemplateID="+testid;
+            let form = document.createElement("form");
+            form.action = baseUrl;
+            form.method = "POST";
+            document.body.appendChild(form);
+            form.submit()
+        } else {
+
+        }
+    }
+</script>
+
 
 <html>
 <head>
@@ -52,6 +68,9 @@
             </td>
             <td>
                 <button class="btn btn-block "><a href="index.jsp?webpage=editTestTemplate&testTemplateId=<%=testTemplates.get(i).getId()%>">Edytuj test</a></button>
+            </td>
+            <td>
+                <button class="btn btn-block" onclick="deleteTest(<%=testTemplates.get(i).getId()%>)"> Usuń test</button>
             </td>
         </tr>
 
