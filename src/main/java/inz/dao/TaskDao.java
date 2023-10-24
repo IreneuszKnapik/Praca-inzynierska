@@ -331,10 +331,10 @@ public class TaskDao {
         return tasks;
     }
 
-    public List<Task> getTasksByTestTemplate(Integer testtemplate_id, Integer user_id) {
+    public List<TaskTemplate> getTaskTemplatesByTestTemplate(Integer testtemplate_id) {
 
         Session session = null;
-        List<Task> tasks = null;
+        List<TaskTemplate> taskTemplates = null;
 
         try {
             //System.out.print("Trying to get tasks for " + taskGroupUsername);
@@ -344,14 +344,14 @@ public class TaskDao {
 
 
             //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
+            //            Query<Group> getGroupsQuery= session.createQuery("select g from Group g join g.users u WHERE u.id=:user_id");
 
-            Query<Task> query= session.createQuery("select t from Task t WHERE t.user_id=:user_id AND t.taskgroup_id=( select n from TaskGroup where n.testtemplate_id=:testtemplate_id)");
+            Query<TaskTemplate> query= session.createQuery("select t from TaskTemplate t join t.testTemplates tpl where tpl.id=:testtemplate_id");
             query.setParameter("testtemplate_id",testtemplate_id);
-            query.setParameter("user_id",user_id);
 
-            tasks = query.list();
+            taskTemplates = query.list();
             System.out.println(query.toString());
-            Hibernate.initialize(tasks);
+            Hibernate.initialize(taskTemplates);
 
         }
 
@@ -366,7 +366,23 @@ public class TaskDao {
         }
 
 
-        return tasks;
+        return taskTemplates;
+    }
+
+    public void createTasksFromTemplate(Integer user_id, Integer testtemplate_id, Integer test_id){
+        System.out.println("creating tasks from template:" + testtemplate_id +"for user" + user_id);
+        List<TaskTemplate> taskTemplates = getTaskTemplatesByTestTemplate(testtemplate_id);
+        System.out.println("taskTemplates.size()" + taskTemplates.size());
+        for (int i = 0; i < taskTemplates.size(); i++){
+            Task newTask = new Task();
+            newTask.setAnswer(taskTemplates.get(i).getAnswer());
+            newTask.setDescription(taskTemplates.get(i).getDescription());
+            newTask.setScore(taskTemplates.get(i).getScore());
+            newTask.setUser_id(user_id);
+            newTask.setTest_id(test_id);
+            saveTask(newTask);
+        }
+
     }
 
 
@@ -408,7 +424,7 @@ public class TaskDao {
         return taskGroups;
 
     }
-    public void startTest(Integer test_template_id, Integer user_id) {
+    public void old_startTest(Integer test_template_id, Integer user_id) {
 
         Transaction transaction = null;
 
@@ -418,7 +434,6 @@ public class TaskDao {
 
             Test newTest = new Test();
             newTest.setTest_template_id(test_template_id);
-            newTest.setTaskgroup_id(42);
             newTest.setUser_id(user_id);
             newTest.setStart_date(new Timestamp(System.currentTimeMillis()));
             session.save(newTest);
@@ -436,11 +451,12 @@ public class TaskDao {
         
     }
 
-    public void submitTest(Task task, Integer user_id) {
+    public void old_submitTest(Task task, Integer user_id) {
 
 
         Transaction transaction = null;
 
+        Integer test_id = null;
         Integer taskgroup_id = null;
         Integer newTestId = null;
 
@@ -454,8 +470,8 @@ public class TaskDao {
             Query<Task> saveLastTask_query= session.createQuery("select t from Task t WHERE t.id =:task_id");
             saveLastTask_query.setParameter("task_id",task_id);
             System.out.print(task_id);
-            taskgroup_id = saveLastTask_query.uniqueResult().getTaskgroup_id();
-            System.out.println( "taskgroup_id:" + taskgroup_id +'\n');
+            test_id = saveLastTask_query.uniqueResult().getTest_id();
+            System.out.println( "test_id:" + test_id +'\n');
 
 
 
@@ -474,11 +490,10 @@ public class TaskDao {
             transaction = session.beginTransaction();
 
             Test newTest = new Test();
-            System.out.println( "taskgroup_id:" + taskgroup_id +'\n');
             System.out.println( "user_id:" + user_id +'\n');
 
 //--------------
-            newTest.setTaskgroup_id(taskgroup_id);
+            newTest.setTest_template_id(test_id);
             newTest.setUser_id(user_id);
             newTest.setSubmit_date(new Timestamp(System.currentTimeMillis()));
             session.save(newTest);

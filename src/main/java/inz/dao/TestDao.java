@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +116,62 @@ public class TestDao {
 
     }
 
-    //record testDescription(String name, String description) {}
+
+
+    public Integer openTest(Integer  user_id, Integer test_template_id) {
+        Session session = null;
+        Transaction transaction = null;
+
+        Test previousTest = null;
+        Test newTest = null;
+
+        Integer testID = null;
+
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+
+            Query <Test> getTheNewTestRecord_query = session.createQuery("from Test t WHERE t.test_template_id=:test_template_id AND t.user_id=:user_id AND submit_date is NULL order by start_date desc");
+            getTheNewTestRecord_query.setParameter("test_template_id",test_template_id);
+            getTheNewTestRecord_query.setParameter("user_id",user_id);
+            getTheNewTestRecord_query.setMaxResults(1);
+
+            previousTest = getTheNewTestRecord_query.uniqueResult();
+            if(previousTest == null){
+                newTest = new Test();
+
+                newTest.setTest_template_id(test_template_id);
+                newTest.setUser_id(user_id);
+                newTest.setStart_date((new Timestamp(System.currentTimeMillis())));
+                Integer newTestID = (Integer) session.save(newTest);
+
+                TaskDao taskDao = new TaskDao();
+                taskDao.createTasksFromTemplate(user_id,test_template_id,newTestID);
+                transaction.commit();
+                testID = newTestID;
+
+            }else{
+                Hibernate.initialize(previousTest);
+                transaction.commit();
+                testID = previousTest.getId();
+            }
+
+
+
+
+
+
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+
+        return testID;
+
+    }
 
 
     public Test getTestByUserAndTemplate(Integer user_id, Integer test_template_id) {
@@ -283,4 +339,6 @@ public class TestDao {
 
 
     }
+
+
 }

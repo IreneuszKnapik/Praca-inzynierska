@@ -267,7 +267,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         task.setAnswer(request.getParameter("answer"));
 
         Integer user_id =  Integer.parseInt(request.getParameter("user"));
-        taskDao.submitTest(task,user_id);
+        //taskDao.submitTest(task,user_id);
 
 
         RequestDispatcher dispatcher = null;
@@ -344,6 +344,25 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     }
 
+    private void openTest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        session = request.getSession();
+        Integer testTemplateId = Integer.valueOf(request.getParameter("testTemplateId"));
+        User currentUser = (User) session.getAttribute("currentUser");
+        TestDao testDao = new TestDao();
+        Integer testID = null;
+
+        System.out.println("before opening test");
+        testID = testDao.openTest(currentUser.getId(),testTemplateId);
+        System.out.println("new created testID:" + testID);
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&taskId=0&testId="+testID);
+        dispatcher.forward(request, response);
+
+    }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session = request.getSession();
         User currentUser = (User) session.getAttribute("currentUser");
@@ -357,6 +376,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         response.setContentType("text/html");
 
         String action = request.getParameter("action");
+        System.out.println("action:" + action);
 
         if(action==null){
             RequestDispatcher dispatcher = null;
@@ -406,12 +426,19 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             addUser(request,response);
 
         }
+        else if(action.equals("openTest")){
+            System.out.println("GET request before opening test");
+            openTest(request,response);
+
+        }
 
 
 
 
 
     }
+
+
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -469,6 +496,11 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         else if(action.equals("addUser")){
 
             addUser(request,response);
+
+        }
+        else if(action.equals("openTest")){
+
+            openTest(request,response);
 
         }
 

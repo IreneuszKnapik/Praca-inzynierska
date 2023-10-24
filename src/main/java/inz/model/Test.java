@@ -39,9 +39,6 @@ public class Test {
     @JoinColumn(name = "user_id")
     private int user_id;
 
-    @Column(name = "taskgroup_id")
-    private int taskgroup_id;
-
     public int getTest_template_id() {
         return test_template_id;
     }
@@ -67,14 +64,6 @@ public class Test {
 
     public void setUser_id(int user_id) {
         this.user_id = user_id;
-    }
-
-    public int getTaskgroup_id() {
-        return taskgroup_id;
-    }
-
-    public void setTaskgroup_id(int taskgroup_id) {
-        this.taskgroup_id = taskgroup_id;
     }
 
 

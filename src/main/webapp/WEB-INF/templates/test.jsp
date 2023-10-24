@@ -14,23 +14,14 @@
 <%@page buffer="8192kb" autoFlush="false" %>
 
 <%
-    GroupDao groupDao = new GroupDao();
-    List<Group> groups=null;
-    groups = groupDao.getGroupsByUserId(currentUser.getId());
-
     TaskDao taskDao = new TaskDao();
-
     List<Task> tasks;
     String testId = request.getParameter("testId");
 
     tasks = taskDao.getTasksByTest(Integer.parseInt(testId),currentUser.getId());
+    System.out.println(tasks.size());
 
-    Integer taskId;
-    if(request.getParameter("taskId").equals(null)){
-        taskId = 0;
-    }else {
-        taskId = Integer.parseInt(request.getParameter("taskId"));
-    }
+    Integer taskId = Integer.valueOf(request.getParameter("taskId"));
     System.out.print("taskID " + taskId +" \n");
 
 

@@ -66,14 +66,6 @@ public class Task {
         this.user_id = user_id;
     }
 
-    public int getTaskgroup_id() {
-        return taskgroup_id;
-    }
-
-    public void setTaskgroup_id(int taskgroup_id) {
-        this.taskgroup_id = taskgroup_id;
-    }
-
     public boolean isSubmitted() {
         return submitted;
     }
@@ -82,8 +74,6 @@ public class Task {
         this.submitted = submitted;
     }
 
-    @Column(name = "taskgroup_id")
-    private int taskgroup_id;
 
     @Column(name = "submitted")
     private boolean submitted;

@@ -39,7 +39,7 @@
                 <%=testTemplates.get(i).getId()%>
             </td>
             <td>
-                <a href="index.jsp?webpage=test&test=<%=testDao.getTestByUserAndTemplate(currentUser.getId(),testTemplates.get(i).getId())%>&taskId=0"><%=testTemplates.get(i).getName()%></a>
+                <a href="index?&action=openTest&testTemplateId=<%=testTemplates.get(i).getId()%>"><%=testTemplates.get(i).getName()%></a>
             </td>
 
         </tr>
