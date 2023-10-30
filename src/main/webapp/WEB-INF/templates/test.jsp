@@ -57,14 +57,57 @@
         this.taskId = id;
     }
 
+    function updateAnswer(text) {
+        let result_element = document.querySelector("#highlighting-content");
+
+        if(text[text.length-1] == "\n") { // If the last character is a newline character
+            text += " "; // Add a placeholder space character to the final line
+        }
+
+        result_element.innerHTML= text.replace(new RegExp("&", "g"), "&").replace(new RegExp("<", "g"), "&lt");
+        Prism.highlightElement(result_element);
+
+    }
+    function sync_scroll(element) {
+        let result_element = document.querySelector("#highlighting");
+        result_element.scrollTop = element.scrollTop;
+        result_element.scrollLeft = element.scrollLeft;
+    }
+
+    window.onload = function (){
+        let loadPrism = document.createElement("script");
+        loadPrism.type = 'text/javascript';
+        loadPrism.src = "${pageContext.request.contextPath}/static/prism/prism.js";
+        document.getElementsByTagName("head")[0].appendChild(loadPrism);
+    }
+
+    function check_tab(element, event) {
+        let code = element.value;
+        if(event.key == "Tab") {
+            /* Tab key pressed */
+            event.preventDefault(); // stop normal
+            let before_tab = code.slice(0, element.selectionStart); // text before tab
+            let after_tab = code.slice(element.selectionEnd, element.value.length); // text after tab
+            let cursor_pos = element.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
+            element.value = before_tab + "\t" + after_tab; // add tab char
+            // move cursor
+            element.selectionStart = cursor_pos;
+            element.selectionEnd = cursor_pos;
+            updateAnswer(element.value); // Update text to include indent
+        }
+    }
 
 </script>
 
 <html>
 <head>
+    <style><%@include file="/static/prism/prism.css"%></style>
+    <style><%@include file="/static/css/test.css"%></style>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
+
+
 <p>Zalogowany jako:<%=currentUser.getUsername() %></p>
 <p>Id testu:<%=testId%> </p>
 
@@ -104,9 +147,16 @@
 
 
         </table>
-            <textarea name="answer" class="h-100 w-100" form="testForm">
+        <div id="answerEditor">
+            <pre id="highlighting" aria-hidden="true">
+                <code id="highlighting-content" class="language-cpp h-100 w-100" ><%=answer%>
+                </code>
+            </pre>
+            <textarea id="editing" name="answer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm">
 <%=answer%>
             </textarea>
+        </div>
+
         <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);saveAnswer()" form ="testForm" class="btn">Zapisz</button>
         <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);saveAnswerWithSubmit()" form ="testForm" class="btn">Wyślij test do oceny</button>
 
@@ -116,6 +166,7 @@
 
 
 
-
 </body>
+
+
 </html>

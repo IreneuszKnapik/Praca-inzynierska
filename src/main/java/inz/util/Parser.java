@@ -16,7 +16,7 @@ public class Parser {
 
     public static String parse(String input)
     {
-        String pattern="register;login;landing;taskTemplates;main;admin;loginErrors;test;tests;testTemplates;testTemplate;addTestTemplate;editTestTemplate;users;addUser;editUser;";
+        String pattern="register;login;landing;taskTemplates;main;admin;loginErrors;error;test;tests;testTemplates;testTemplate;addTestTemplate;editTestTemplate;users;addUser;editUser;";
 
         String output = "landing";
         String[] pages = pattern.split(";");

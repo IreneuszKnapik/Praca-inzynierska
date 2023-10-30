@@ -4,7 +4,7 @@ package inz.controller;
 import inz.dao.*;
 import inz.model.*;
 import inz.util.Parser;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.RequestDispatcher;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 @WebServlet("/index")
 @MultipartConfig
-
+@EnableWebMvc
 public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
     private UserDao userDao;
     public HttpSession session;
@@ -46,15 +46,18 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
 
     }
-
+/*
+    @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        System.out.println("Resource handlers added!");
         registry
                 .addResourceHandler("/resources/**")
-                .addResourceLocations("/static/")
-                .addResourceLocations("/static/css/")
-                .addResourceLocations("/static/bootstrap-4.0.0-dist/css/");
+                //.addResourceLocations("/static/")
+               // .addResourceLocations("/static/css/")
+                //.addResourceLocations("/static/bootstrap-4.0.0-dist/css/")
+                .addResourceLocations("/static/prism/");
     }
-
+*/
 
 
     private void addTestTemplate(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException {
@@ -355,12 +358,19 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         System.out.println("before opening test");
         testID = testDao.openTest(currentUser.getId(),testTemplateId);
         System.out.println("new created testID:" + testID);
-
         RequestDispatcher dispatcher = null;
 
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&taskId=0&testId="+testID);
-        dispatcher.forward(request, response);
+        if( testID == null || testID == 0){
+            String errorText = "Brak dostępnych podejść do testu";
+            request.setCharacterEncoding("UTF-8");
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=error&targetPage=tests&errors="+errorText);
 
+        }
+        else{
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&taskId=0&testId="+testID);
+
+        }
+        dispatcher.forward(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

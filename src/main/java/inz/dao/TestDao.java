@@ -1,6 +1,9 @@
 package inz.dao;
 
-import inz.model.*;
+import inz.model.Group;
+import inz.model.TaskTemplate;
+import inz.model.Test;
+import inz.model.TestTemplate;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -9,6 +12,7 @@ import org.hibernate.query.Query;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -131,30 +135,59 @@ public class TestDao {
             session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
 
-            Query <Test> getTheNewTestRecord_query = session.createQuery("from Test t WHERE t.test_template_id=:test_template_id AND t.user_id=:user_id AND submit_date is NULL order by start_date desc");
-            getTheNewTestRecord_query.setParameter("test_template_id",test_template_id);
-            getTheNewTestRecord_query.setParameter("user_id",user_id);
-            getTheNewTestRecord_query.setMaxResults(1);
+            Query <java.util.Date> testTemplateDueDate  = session.createQuery("SELECT t.due_date from TestTemplate t WHERE t.id=:test_template_id");
+            testTemplateDueDate.setParameter("test_template_id",test_template_id);
+            testTemplateDueDate.setMaxResults(1);
+            Date due_date = testTemplateDueDate.uniqueResult();
+            System.out.println("due date from template:" + due_date );
 
-            previousTest = getTheNewTestRecord_query.uniqueResult();
-            if(previousTest == null){
-                newTest = new Test();
+            Query <Integer> testTemplateAttemptCount  = session.createQuery("SELECT t.allowed_attempts from TestTemplate t WHERE t.id=:test_template_id");
+            testTemplateAttemptCount.setParameter("test_template_id",test_template_id);
+            testTemplateAttemptCount.setMaxResults(1);
+            Integer allowedAttempts = testTemplateAttemptCount.uniqueResult();
+            System.out.println("limit from template:" + allowedAttempts);
 
-                newTest.setTest_template_id(test_template_id);
-                newTest.setUser_id(user_id);
-                newTest.setStart_date((new Timestamp(System.currentTimeMillis())));
-                Integer newTestID = (Integer) session.save(newTest);
 
-                TaskDao taskDao = new TaskDao();
-                taskDao.createTasksFromTemplate(user_id,test_template_id,newTestID);
-                transaction.commit();
-                testID = newTestID;
 
-            }else{
-                Hibernate.initialize(previousTest);
-                transaction.commit();
-                testID = previousTest.getId();
+            Query <Long> testCount  = session.createQuery("select count(t) from Test t WHERE t.test_template_id=:test_template_id AND t.user_id=:user_id ");
+            testCount.setParameter("test_template_id",test_template_id);
+            testCount.setParameter("user_id",user_id);
+            testCount.setMaxResults(1);
+            Long attemptCount = testCount.uniqueResult();
+            System.out.println("attempts count:" + attemptCount );
+
+            if(attemptCount < allowedAttempts){
+                Query <Test> getTheNewTestRecord_query = session.createQuery("from Test t WHERE t.test_template_id=:test_template_id AND t.user_id=:user_id AND submit_date is NULL order by start_date desc");
+                getTheNewTestRecord_query.setParameter("test_template_id",test_template_id);
+                getTheNewTestRecord_query.setParameter("user_id",user_id);
+                getTheNewTestRecord_query.setMaxResults(1);
+
+                previousTest = getTheNewTestRecord_query.uniqueResult();
+                if(previousTest == null){
+                    newTest = new Test();
+
+                    newTest.setTest_template_id(test_template_id);
+                    newTest.setUser_id(user_id);
+                    newTest.setStart_date((new Timestamp(System.currentTimeMillis())));
+                    Integer newTestID = (Integer) session.save(newTest);
+
+                    TaskDao taskDao = new TaskDao();
+                    taskDao.createTasksFromTemplate(user_id,test_template_id,newTestID);
+                    transaction.commit();
+                    testID = newTestID;
+
+                }else{
+                    Hibernate.initialize(previousTest);
+                    transaction.commit();
+                    testID = previousTest.getId();
+                }
             }
+            else{
+                return 0;
+            }
+
+
+
 
 
 
