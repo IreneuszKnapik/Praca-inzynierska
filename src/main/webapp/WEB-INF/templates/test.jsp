@@ -57,14 +57,18 @@
         this.taskId = id;
     }
 
+    function cleanMarkdown(text){
+        return text.replace(new RegExp("&", "g"), "&").replace(new RegExp("<", "g"), "&lt");
+    }
+
     function updateAnswer(text) {
         let result_element = document.querySelector("#highlighting-content");
 
         if(text[text.length-1] == "\n") { // If the last character is a newline character
             text += " "; // Add a placeholder space character to the final line
         }
-
-        result_element.innerHTML= text.replace(new RegExp("&", "g"), "&").replace(new RegExp("<", "g"), "&lt");
+        text = cleanMarkdown(text);
+        result_element.innerHTML= text
         Prism.highlightElement(result_element);
 
     }
@@ -79,6 +83,8 @@
         loadPrism.type = 'text/javascript';
         loadPrism.src = "${pageContext.request.contextPath}/static/prism/prism.js";
         document.getElementsByTagName("head")[0].appendChild(loadPrism);
+        let editing = document.querySelector("#editing");
+        updateAnswer(editing.value);
     }
 
     function check_tab(element, event) {
