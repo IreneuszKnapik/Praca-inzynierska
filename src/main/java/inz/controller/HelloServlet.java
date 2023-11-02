@@ -88,8 +88,8 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         TaskTemplateDao taskTemplateDao= new TaskTemplateDao();
         for (int i = 0; i < tasks.length; i++) {
             System.out.println("adding testTemplateId: " + tasks[i]);
-            System.out.print("TaskTemplateDao.getTaskTemplateById: " + TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])).toString());
-            testTemplate.addTaskTemplate( TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])));
+            System.out.print("TaskTemplateDao.getTaskTemplateById: " + taskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])).toString());
+            testTemplate.addTaskTemplate( taskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i])));
         }
 
         testDao.saveTestTemplate(testTemplate);
@@ -138,7 +138,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
             for (int i = 0; i < tasks.length; i++) {
                 System.out.println("taskID being flipped: " + Integer.parseInt(tasks[i]));
-                TaskTemplate taskTemplate = TaskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i]));
+                TaskTemplate taskTemplate = taskTemplateDao.getTaskTemplateById(Integer.parseInt(tasks[i]));
 
                 if( testTemplate.getTasks().containsKey(taskTemplate.getId())){
                     testTemplate.removeTaskTemplate(taskTemplate);
@@ -270,12 +270,15 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         task.setAnswer(request.getParameter("answer"));
 
         Integer user_id =  Integer.parseInt(request.getParameter("user"));
-        //taskDao.submitTest(task,user_id);
+        taskDao.saveTask(task);
+
+        Integer test_id =  Integer.parseInt(request.getParameter("test"));
+        taskDao.submitTest(test_id);
 
 
         RequestDispatcher dispatcher = null;
 
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskGroups");
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=tests");
 
         dispatcher.forward(request, response);
     }
@@ -371,7 +374,60 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         }
         dispatcher.forward(request, response);
+
+
     }
+
+    private void addTaskTemplate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
+        session = request.getSession();
+
+        TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
+        TaskTemplate taskTemplate = new TaskTemplate();
+
+        taskTemplate.setAnswer((request.getParameter("answer")));
+        taskTemplate.setDescription((request.getParameter("description")));
+        taskTemplate.setScore(Integer.parseInt(request.getParameter("score")));
+
+        taskTemplateDao.saveTaskTemplate(taskTemplate);
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskTemplates");
+        dispatcher.forward(request, response);
+
+    }
+
+    private void updateTaskTemplate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException , ParseException{
+        session = request.getSession();
+
+        TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
+        TaskTemplate taskTemplate = taskTemplateDao.getTaskTemplateById(Integer.parseInt(request.getParameter("taskTemplateID")));
+
+        taskTemplate.setAnswer(request.getParameter("answer"));
+        taskTemplate.setDescription(request.getParameter("description"));
+        taskTemplate.setScore(Integer.parseInt(request.getParameter("score")));
+
+        taskTemplateDao.updateTaskTemplate(taskTemplate);
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskTemplates");
+        dispatcher.forward(request, response);
+
+    }
+
+
+    private void deleteTaskTemplate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        session = request.getSession();
+        TaskDao taskDao = new TaskDao();
+
+        taskDao.deleteTaskTemplateById(Integer.parseInt(request.getParameter("taskTemplateID")));
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=taskTemplates");
+        dispatcher.forward(request, response);
+    }
+
+
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session = request.getSession();
@@ -417,10 +473,27 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             }
 
         }
+        else if(action.equals("addTaskTemplate")){
+            try {
+                addTaskTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
         else if(action.equals("updateTestTemplate")){
 
             try {
                 updateTestTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
+        else if(action.equals("updateTaskTemplate")){
+
+            try {
+                updateTaskTemplate(request,response);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -431,13 +504,19 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             deleteTestTemplate(request,response);
 
         }
+
+        else if(action.equals("deleteTaskTemplate")){
+
+            deleteTaskTemplate(request,response);
+        }
+
         else if(action.equals("addUser")){
 
             addUser(request,response);
 
         }
         else if(action.equals("openTest")){
-            System.out.println("GET request before opening test");
+            //System.out.println("GET request before opening test");
             openTest(request,response);
 
         }
@@ -489,6 +568,15 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             }
 
         }
+        else if(action.equals("addTaskTemplate")){
+
+            try {
+                addTaskTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
         else if(action.equals("updateTestTemplate")){
 
             try {
@@ -498,10 +586,23 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             }
 
         }
+        else if(action.equals("updateTaskTemplate")){
+
+            try {
+                updateTaskTemplate(request,response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
         else if(action.equals("deleteTestTemplate")){
 
             deleteTestTemplate(request,response);
 
+        }
+        else if(action.equals("deleteTaskTemplate")){
+
+            deleteTaskTemplate(request,response);
         }
         else if(action.equals("addUser")){
 

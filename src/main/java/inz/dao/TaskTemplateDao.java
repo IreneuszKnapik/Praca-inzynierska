@@ -2,7 +2,6 @@ package inz.dao;
 
 import inz.model.TaskGroupTemplate;
 import inz.model.TaskTemplate;
-import inz.model.TestTemplate;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -14,7 +13,7 @@ import java.util.List;
 
 public class TaskTemplateDao {
 
-    public static TaskTemplate getTaskTemplateById(Integer taskTemplateID) {
+    public TaskTemplate getTaskTemplateById(Integer taskTemplateID) {
 
 
         TaskTemplate taskTemplate = null;
@@ -44,7 +43,7 @@ public class TaskTemplateDao {
 
     }
 
-    public void saveTask(TaskTemplate task) {
+    public void saveTaskTemplate(TaskTemplate task) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // start a transaction
@@ -60,6 +59,8 @@ public class TaskTemplateDao {
             e.printStackTrace();
         }
     }
+
+
 
 
     public List<TaskTemplate> getTaskByTaskGroup(String taskGroupName) {
@@ -140,7 +141,23 @@ public class TaskTemplateDao {
 
     }
 
+    public void updateTaskTemplate(TaskTemplate taskTemplate) {
 
-    public void updateTestTemplateTasks(TestTemplate testTemplate, Integer ID) {
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the user object
+            session.update(taskTemplate);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
     }
+
 }

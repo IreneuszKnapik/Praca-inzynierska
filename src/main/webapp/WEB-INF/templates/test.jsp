@@ -40,7 +40,7 @@
     let taskId;
 
     function saveAnswerWithSubmit () {
-        let baseUrl = "index?action=saveAnswerWithSubmit&taskId=<%=task.getId()%>&targetTest=<%=testId%>" + "&targetTask=" + this.taskId+"&user=<%=currentUser.getId()%>";
+        let baseUrl = "index?action=saveAnswerWithSubmit&taskId=<%=task.getId()%>&test=<%=testId%>"+"&user=<%=currentUser.getId()%>"+"&test=<%=testId%>";
         let form = document.getElementById("testForm");
         form.action = baseUrl;
         form.submit();
@@ -64,12 +64,12 @@
     function updateAnswer(text) {
         let result_element = document.querySelector("#highlighting-content");
 
-        if(text[text.length-1] == "\n") { // If the last character is a newline character
-            text += " "; // Add a placeholder space character to the final line
+        if(text[text.length-1] == "\n") {
+            text += " ";
         }
         text = cleanMarkdown(text);
         result_element.innerHTML= text
-        Prism.highlightElement(result_element);
+        //Prism.highlightElement(result_element);
 
     }
     function sync_scroll(element) {
@@ -90,16 +90,14 @@
     function check_tab(element, event) {
         let code = element.value;
         if(event.key == "Tab") {
-            /* Tab key pressed */
             event.preventDefault(); // stop normal
-            let before_tab = code.slice(0, element.selectionStart); // text before tab
-            let after_tab = code.slice(element.selectionEnd, element.value.length); // text after tab
-            let cursor_pos = element.selectionEnd + 1; // where cursor moves after tab - moving forward by 1 char to after tab
-            element.value = before_tab + "\t" + after_tab; // add tab char
-            // move cursor
+            let before_tab = code.slice(0, element.selectionStart);
+            let after_tab = code.slice(element.selectionEnd, element.value.length);
+            let cursor_pos = element.selectionEnd + 1;
+            element.value = before_tab + "\t" + after_tab;
             element.selectionStart = cursor_pos;
             element.selectionEnd = cursor_pos;
-            updateAnswer(element.value); // Update text to include indent
+            updateAnswer(element.value);
         }
     }
 

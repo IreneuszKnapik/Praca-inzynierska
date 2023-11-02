@@ -1,9 +1,6 @@
 package inz.dao;
 
-import inz.model.Task;
-import inz.model.TaskGroup;
-import inz.model.TaskTemplate;
-import inz.model.Test;
+import inz.model.*;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -11,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 
@@ -563,6 +561,72 @@ public class TaskDao {
             }
             e.printStackTrace();
         }
+
+    }
+
+    public void submitTest(Integer test_id) {
+        Session session = null;
+        Transaction transaction = null;
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Date submit_date = new Timestamp(System.currentTimeMillis());
+            Query<Task> query = session.createQuery("update Test t set t.submit_date=:submit_date WHERE t.id=:test_id");
+            query.setParameter("submit_date",submit_date);
+            query.setParameter("test_id",test_id);
+            query.executeUpdate();
+            transaction.commit();
+
+        }
+
+        catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+    }
+
+
+    public void deleteTaskTemplateById(int taskTemplateID) {
+        Session session = null;
+        Transaction transaction = null;
+
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            TaskTemplate t = session.get(TaskTemplate.class,taskTemplateID);
+            if(t != null){
+                session.delete(t);
+            }
+
+            transaction.commit();
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
 
     }
 }

@@ -82,6 +82,7 @@ public class TestDao {
         List<Group> groups = null;
         List<TestTemplate> testTemplates = null;
         List<Integer> groups_ids = new ArrayList<>();
+        List<Integer> nonEmptyTestTemplates_ids = new ArrayList<>();
 
         try {
 
@@ -97,8 +98,13 @@ public class TestDao {
             }
 
 
-            Query<TestTemplate> testTemplateQuery= session.createQuery("select distinct t from TestTemplate t JOIN t.groups g WHERE g.id in (:groups_ids)");
+            Query<Integer> nonEmptyTestTemplates = session.createSQLQuery("SELECT testtemplate_id FROM testtemplates_tasktemplates");
+
+            nonEmptyTestTemplates_ids = nonEmptyTestTemplates.list();
+
+            Query<TestTemplate> testTemplateQuery= session.createQuery("select distinct t from TestTemplate t JOIN t.groups g WHERE g.id in (:groups_ids) and t.id in (:nonEmptyTestTemplates_ids)");
             testTemplateQuery.setParameterList("groups_ids",groups_ids);
+            testTemplateQuery.setParameterList("nonEmptyTestTemplates_ids",nonEmptyTestTemplates_ids);
 
             testTemplates = testTemplateQuery.list();
             System.out.println(testTemplateQuery.toString());
@@ -149,7 +155,7 @@ public class TestDao {
 
 
 
-            Query <Long> testCount  = session.createQuery("select count(t) from Test t WHERE t.test_template_id=:test_template_id AND t.user_id=:user_id ");
+            Query <Long> testCount  = session.createQuery("select count(t) from Test t WHERE t.test_template_id=:test_template_id AND t.user_id=:user_id AND submit_date is NOT NULL");
             testCount.setParameter("test_template_id",test_template_id);
             testCount.setParameter("user_id",user_id);
             testCount.setMaxResults(1);
@@ -239,6 +245,7 @@ public class TestDao {
 
         return newestTestFromDB;
     }
+
 
     public List<TestTemplate> getAllTestTemplates() {
         Session session = null;

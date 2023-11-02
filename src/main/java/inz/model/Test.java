@@ -66,6 +66,15 @@ public class Test {
         this.user_id = user_id;
     }
 
+    public Integer getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Integer grade) {
+        this.grade = grade;
+    }
+
+    private Integer grade;
 
 
 }
