@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 
 @WebServlet("/index")
@@ -31,13 +32,15 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     public void init(){
         userDao = new UserDao();
+
+        //creating a test admin user each time for my convenience
         User admin2 = userDao.getUserByUsername("admin2");
         if(admin2 == null){
             admin2 = new User();
             admin2.setUsername("admin2");
             Parser.bCryptPasswordEncoder().encode("admin2");
             admin2.setPassword(Parser.bCryptPasswordEncoder().encode("admin2"));
-            admin2.setEmail("admin2.example.com");
+            admin2.setEmail("admin2@example.com");
             admin2.setType(3);
             userDao.saveUser(admin2);
         }
@@ -45,6 +48,113 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         //System.out.print(admin.getId() + " " + admin.getUsername() + " " + admin.getPassword() + " "+ admin.getEmail());
 
 
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        /*
+        session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+
+
+            currentUser = new User();
+            session.setAttribute("currentUser", currentUser);
+        }
+        */
+        response.setContentType("text/html");
+
+        String action = request.getParameter("action");
+        System.out.println("action:" + action);
+        dispatchSelector(request,response,action);
+
+    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        response.setContentType("text/html");
+
+        String action = request.getParameter("action");
+        System.out.println("action:" + action);
+        dispatchSelector(request,response,action);
+
+    }
+
+    private void dispatchSelector(HttpServletRequest request, HttpServletResponse response, String action) throws ServletException, IOException {
+        /*
+        User currentUser =(User) session.getAttribute("currentUser");
+        if(currentUser==null) {
+
+            currentUser= new User();
+            session.setAttribute("currentUser",currentUser);
+        }
+        */
+
+        if (action == null) {
+            RequestDispatcher dispatcher = null;
+            dispatcher = request.getRequestDispatcher("index.jsp");
+            dispatcher.forward(request, response);
+        } else if (action.equals("login")) {
+
+            login(request, response);
+
+        } else if (action.equals("register")) {
+
+            register(request, response);
+
+        } else if (action.equals("saveAnswer")) {
+
+            saveAnswer(request, response);
+
+        } else if (action.equals("saveAnswerWithSubmit")) {
+
+            saveAnswerWithSubmit(request, response);
+
+        } else if (action.equals("addTestTemplate")) {
+
+            try {
+                addTestTemplate(request, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        } else if (action.equals("addTaskTemplate")) {
+            try {
+                addTaskTemplate(request, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        } else if (action.equals("updateTestTemplate")) {
+
+            try {
+                updateTestTemplate(request, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        } else if (action.equals("updateTaskTemplate")) {
+
+            try {
+                updateTaskTemplate(request, response);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        } else if (action.equals("deleteTestTemplate")) {
+
+            deleteTestTemplate(request, response);
+
+        } else if (action.equals("deleteTaskTemplate")) {
+
+            deleteTaskTemplate(request, response);
+        } else if (action.equals("addUser")) {
+
+            addUser(request, response);
+
+        } else if (action.equals("openTest")) {
+            //System.out.println("GET request before opening test");
+            openTest(request, response);
+
+        }
     }
 /*
     @Override
@@ -57,8 +167,144 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
                 //.addResourceLocations("/static/bootstrap-4.0.0-dist/css/")
                 .addResourceLocations("/static/prism/");
     }
+
 */
 
+    private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        //System.out.print("Username " + username + "\n" );
+        String errors = "";
+
+        RequestDispatcher dispatcher = null;
+
+        User userCheck = userDao.getUserByUsername(username);
+        session = request.getSession();
+
+        if(userCheck != null && Parser.isCorrectPasswd(userCheck, password) && userCheck.getType() != 0){
+            session.setAttribute("currentUser", userCheck);
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=main");
+        }
+        else{
+
+            if(userCheck == null){
+                errors +="Nieprawidłowy Login<br/>";
+            }
+            if(!Parser.isCorrectPasswd(userCheck, password)){
+                errors +="Nieprawidłowe hasło<br/> ";
+            }
+
+            if(userCheck.getType() == 0){
+                errors +="Konto jest zablokowane przez administratora<br/> ";
+            }
+
+
+            dispatcher = request.getRequestDispatcher("loginErrors.jsp?errors="+errors);
+        }
+
+        dispatcher.forward(request, response);
+    }
+
+    private void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        System.out.print("addUser " + request +" /n");
+
+        session = request.getSession();
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String type = request.getParameter("type");
+        User newUser = null;
+
+        User userCheck = userDao.getUserByUsername(username);
+        if(userCheck == null ){
+            newUser = new User();
+            newUser.setUsername(username);
+
+            newUser.setPassword(Parser.bCryptPasswordEncoder().encode(password));
+            newUser.setEmail(email);
+            newUser.setType(Integer.parseInt(type));
+            userDao.saveUser(newUser);
+        }
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
+
+        dispatcher.forward(request, response);
+
+    }
+    private void register(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        session = request.getSession();
+        String errors = "";
+
+        String username = request.getParameter("username");
+        User userCheck = userDao.getUserByUsername(username);
+        User newUser = new User();
+
+        if(userCheck == null ){
+            newUser.setUsername(username);
+        }
+        else{
+            errors = "uzytkownik o podanej nazwie "+ username +" już istnieje";
+
+        }
+
+        String password1 = request.getParameter("password1");
+        String password2 = request.getParameter("password2");
+
+        if(password1.equals(password2)){
+            newUser.setPassword(Parser.bCryptPasswordEncoder().encode(password1));
+            String complexityCheck = Parser.isGoodPasswd(password1);
+
+            if(complexityCheck.equals("good")){
+                newUser.setPassword(Parser.bCryptPasswordEncoder().encode(password1));
+            }
+            else if(complexityCheck.equals("short")){
+                errors = "Hasło jest zbyt krótkie";
+            }
+            else if(complexityCheck.equals("weak")){
+                errors = "Hasło jest zbył słabe, wymagana jest co najmniej 1 mała litera, 1 wielka litera, 1 cyfra i 1 znak alfanumeryczny";
+            }
+            else{
+                errors = "Bład sprawdzania poprawności hasła";
+            }
+        }
+        else{
+            errors = "Podane hasła nie zgadzają się ze sobą";
+        }
+
+
+        String email = request.getParameter("email");
+        boolean isEmail = Pattern.compile("^\\S+@\\S+$").matcher(email).matches();
+        if(isEmail){
+            newUser.setEmail(email);
+        }
+        else{
+            errors = "podany adres e-mail nie wygląda na prawidłowy";
+        }
+
+        newUser.setType(1);
+
+        RequestDispatcher dispatcher = null;
+        if(errors.equals("")){
+            UserDao userDao = new UserDao();
+            userDao.saveUser(newUser);
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=login");
+        }
+        else{
+            request.setCharacterEncoding("UTF-8");
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=error&targetPage=register&errors="+errors);
+        }
+
+        dispatcher.forward(request, response);
+
+
+    }
 
     private void addTestTemplate(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException {
 
@@ -283,72 +529,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         dispatcher.forward(request, response);
     }
 
-    private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        //System.out.print("Username " + username + "\n" );
-        String errors = "";
-
-        RequestDispatcher dispatcher = null;
-
-        User userCheck = userDao.getUserByUsername(username);
-
-        if(userCheck != null && Parser.isCorrectPasswd(userCheck, password) && userCheck.getType() != 0){
-            session.setAttribute("currentUser", userCheck);
-            dispatcher = request.getRequestDispatcher("index.jsp?webpage=main");
-        }
-        else{
-
-            if(userCheck == null){
-                errors +="Nieprawidłowy Login<br/>";
-            }
-            if(!Parser.isCorrectPasswd(userCheck, password)){
-                errors +="Nieprawidłowe hasło<br/> ";
-            }
-
-            if(userCheck.getType() == 0){
-                errors +="Konto jest zablokowane przez administratora<br/> ";
-            }
-
-
-            dispatcher = request.getRequestDispatcher("WEB-INF/templates/loginErrors.jsp?errors="+errors);
-        }
-
-        dispatcher.forward(request, response);
-    }
-
-    private void addUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        System.out.print("addUser " + request +" /n");
-
-        session = request.getSession();
-
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String email = request.getParameter("email");
-        String type = request.getParameter("type");
-        User newUser = null;
-
-        User userCheck = userDao.getUserByUsername(username);
-        if(userCheck == null ){
-            newUser = new User();
-            newUser.setUsername(username);
-
-            newUser.setPassword(Parser.bCryptPasswordEncoder().encode(password));
-            newUser.setEmail(email);
-            newUser.setType(Integer.parseInt(type));
-            userDao.saveUser(newUser);
-        }
-
-        RequestDispatcher dispatcher = null;
-
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
-
-        dispatcher.forward(request, response);
-
-    }
 
     private void openTest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -396,6 +577,8 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     }
 
+
+
     private void updateTaskTemplate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException , ParseException{
         session = request.getSession();
 
@@ -429,191 +612,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
 
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        session = request.getSession();
-        User currentUser = (User) session.getAttribute("currentUser");
-        if (currentUser == null) {
-
-
-            currentUser = new User();
-            session.setAttribute("currentUser", currentUser);
-        }
-
-        response.setContentType("text/html");
-
-        String action = request.getParameter("action");
-        System.out.println("action:" + action);
-
-        if(action==null){
-            RequestDispatcher dispatcher = null;
-            dispatcher = request.getRequestDispatcher("index.jsp");
-            dispatcher.forward(request, response);
-        }
-        else if(action.equals("login")){
-
-            login(request,response);
-
-        }
-        else if(action.equals("saveAnswer")){
-
-            saveAnswer(request,response);
-
-        }
-        else if(action.equals("saveAnswerWithSubmit")){
-
-            saveAnswerWithSubmit(request,response);
-
-        }
-        else if(action.equals("addTestTemplate")){
-
-            try {
-                addTestTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("addTaskTemplate")){
-            try {
-                addTaskTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("updateTestTemplate")){
-
-            try {
-                updateTestTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("updateTaskTemplate")){
-
-            try {
-                updateTaskTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("deleteTestTemplate")){
-
-            deleteTestTemplate(request,response);
-
-        }
-
-        else if(action.equals("deleteTaskTemplate")){
-
-            deleteTaskTemplate(request,response);
-        }
-
-        else if(action.equals("addUser")){
-
-            addUser(request,response);
-
-        }
-        else if(action.equals("openTest")){
-            //System.out.println("GET request before opening test");
-            openTest(request,response);
-
-        }
 
 
 
-
-
-    }
-
-
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        User currentUser =(User) session.getAttribute("currentUser");
-
-        response.setContentType("text/html");
-
-        if(currentUser==null) {
-
-            currentUser= new User();
-            session.setAttribute("currentUser",currentUser);
-        }
-
-        String action = request.getParameter("action");
-
-        if(action==null) action="";
-        else if(action.equals("login")){
-
-            login(request,response);
-
-        }
-        else if(action.equals("saveAnswer")){
-
-            saveAnswer(request,response);
-
-        }
-        else if(action.equals("saveAnswerWithSubmit")){
-
-            saveAnswerWithSubmit(request,response);
-
-        }
-        else if(action.equals("addTestTemplate")){
-
-            try {
-                addTestTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("addTaskTemplate")){
-
-            try {
-                addTaskTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("updateTestTemplate")){
-
-            try {
-                updateTestTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("updateTaskTemplate")){
-
-            try {
-                updateTaskTemplate(request,response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if(action.equals("deleteTestTemplate")){
-
-            deleteTestTemplate(request,response);
-
-        }
-        else if(action.equals("deleteTaskTemplate")){
-
-            deleteTaskTemplate(request,response);
-        }
-        else if(action.equals("addUser")){
-
-            addUser(request,response);
-
-        }
-        else if(action.equals("openTest")){
-
-            openTest(request,response);
-
-        }
-
-    }
 }

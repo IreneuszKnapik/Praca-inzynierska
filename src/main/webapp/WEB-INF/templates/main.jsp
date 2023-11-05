@@ -44,18 +44,22 @@
 </table>
 
 <%}%>
-
+<%if(currentUser.getType() > 2){%>
+<div class="form-group">
+    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=users">Zarządzanie uzytkownikami</a></button>
+</div>
+<%}%>
+<%if(currentUser.getType() > 1){%>
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=testTemplates">Szablony testów</a></button>
 </div>
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskTemplates">Szablony zadań</a></button>
 </div>
+<%}%>
+
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=tests">Testy</a></button>
-</div>
-<div class="form-group">
-    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=users">Zarządzanie uzytkownikami</a></button>
 </div>
 
 </body>

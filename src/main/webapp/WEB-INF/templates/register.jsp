@@ -14,14 +14,17 @@
                 <span><i class="icon icon-user"></i></span>
             </div>
             <div class="form-group">
-                <input type="text" class="form-control item" id="nazwaUsera" name="username" placeholder="Login" required="required">
+                <input type="text" class="form-control item" name="username" placeholder="Login" required="required">
             </div>
 
             <div class="form-group">
-                <input type="password" class="form-control item" id="hasło" name="password"  placeholder="Hasło" required="required">
+                <input type="password" class="form-control item" name="password1"  placeholder="Hasło" required="required">
             </div>
             <div class="form-group">
-                <input type="text" class="form-control item" id="email" name="email" placeholder="Adres email" required="required">
+                <input type="password" class="form-control item" name="password2"  placeholder="Powtórz hasło" required="required">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control item" name="email" placeholder="Adres email" required="required">
             </div>
 
             <div class="form-group">
