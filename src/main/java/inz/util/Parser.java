@@ -55,7 +55,27 @@ public class Parser {
 
     public static String parse(String input)
     {
-        String pattern="register;login;landing;taskTemplates;main;admin;loginErrors;error;taskTemplates;addTaskTemplate;editTaskTemplate;test;tests;testTemplates;testTemplate;addTestTemplate;editTestTemplate;users;addUser;editUser;";
+        String pattern="register;" +
+                "login;" +
+                "landing;" +
+                "taskTemplates;" +
+                "main;" +
+                "admin;" +
+                "loginErrors;" +
+                "error;" +
+                "gradingTests;" +
+                "gradingTest;" +
+                "taskTemplates;" +
+                "addTaskTemplate;" +
+                "editTaskTemplate;" +
+                "test;" +
+                "tests;" +
+                "testTemplates;" +
+                "addTestTemplate;" +
+                "editTestTemplate;" +
+                "users;" +
+                "addUser;" +
+                "editUser;";
 
         String output = "landing";
         String[] pages = pattern.split(";");

@@ -55,6 +55,17 @@ public class Task {
     @Column(name = "answer",columnDefinition = "TEXT")
     private String answer;
 
+    public String getCorrected_answer() {
+        return corrected_answer;
+    }
+
+    public void setCorrected_answer(String corrected_answer) {
+        this.corrected_answer = corrected_answer;
+    }
+
+    @Column(name = "corrected_answer",columnDefinition = "TEXT")
+    private String corrected_answer;
+
     @Column(name = "user_id")
     private int user_id;
 
@@ -66,17 +77,17 @@ public class Task {
         this.user_id = user_id;
     }
 
-    public boolean isSubmitted() {
-        return submitted;
+
+    public int getGraded() {
+        return graded;
     }
 
-    public void setSubmitted(boolean submitted) {
-        this.submitted = submitted;
+    public void setGraded(int graded) {
+        this.graded = graded;
     }
 
-
-    @Column(name = "submitted")
-    private boolean submitted;
+    @Column(name = "graded")
+    private int graded;
 
     public int getTest_id() {
         return test_id;

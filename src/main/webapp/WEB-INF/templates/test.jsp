@@ -39,6 +39,15 @@
 
     let taskId;
 
+    window.onload = function (){
+        let loadPrism = document.createElement("script");
+        loadPrism.type = 'text/javascript';
+        loadPrism.src = "${pageContext.request.contextPath}/static/prism/prism.js";
+        document.getElementsByTagName("head")[0].appendChild(loadPrism);
+        let editing = document.querySelector("#editing");
+        updateAnswer(editing.value);
+    }
+
     function saveAnswerWithSubmit () {
         let baseUrl = "index?action=saveAnswerWithSubmit&taskId=<%=task.getId()%>&test=<%=testId%>"+"&user=<%=currentUser.getId()%>"+"&test=<%=testId%>";
         let form = document.getElementById("testForm");
@@ -69,7 +78,7 @@
         }
         text = cleanMarkdown(text);
         result_element.innerHTML= text
-        //Prism.highlightElement(result_element);
+        Prism.highlightElement(result_element);
 
     }
     function sync_scroll(element) {
@@ -78,14 +87,7 @@
         result_element.scrollLeft = element.scrollLeft;
     }
 
-    window.onload = function (){
-        let loadPrism = document.createElement("script");
-        loadPrism.type = 'text/javascript';
-        loadPrism.src = "${pageContext.request.contextPath}/static/prism/prism.js";
-        document.getElementsByTagName("head")[0].appendChild(loadPrism);
-        let editing = document.querySelector("#editing");
-        updateAnswer(editing.value);
-    }
+
 
     function check_tab(element, event) {
         let code = element.value;
@@ -116,7 +118,7 @@
 <p>Id testu:<%=testId%> </p>
 
 <% if(task.equals(null)){%>
-<h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>
+<h2 class="text-center">W teście nie znajdują się żadne zadania</h2>
 <%
 } else{ %>
 
@@ -153,8 +155,7 @@
         </table>
         <div id="answerEditor">
             <pre id="highlighting" aria-hidden="true">
-                <code id="highlighting-content" class="language-cpp h-100 w-100" ><%=answer%>
-                </code>
+                <code id="highlighting-content" class="language-cpp h-100 w-100" ><%=answer%></code>
             </pre>
             <textarea id="editing" name="answer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm">
 <%=answer%>

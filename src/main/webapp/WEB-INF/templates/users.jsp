@@ -11,6 +11,22 @@
     users = userDao.getAllUsers();
 %>
 
+<script>
+
+    function deleteUser(userId){
+        if (confirm("Czy na pewno usunąć użytkownika" + userId) == true) {
+            let baseUrl = "index?action=deleteUser&userId="+userId;
+            let form = document.createElement("form");
+            form.action = baseUrl;
+            form.method = "POST";
+            document.body.appendChild(form);
+            form.submit()
+        } else {
+
+        }
+    }
+</script>
+
 
 <html>
 <head>
@@ -47,7 +63,12 @@
             <td>
                 <%=users.get(i).getType()%>
             </td>
-
+            <td>
+                <button class="btn btn-block "><a href="index.jsp?webpage=editUser&userId=<%=users.get(i).getId()%>">Edytuj użytkownika</a></button>
+            </td>
+            <td>
+                <button class="btn btn-block" onclick="deleteUser(<%=users.get(i).getId()%>)"> Usuń użytkownika</button>
+            </td>
 
         </tr>
 

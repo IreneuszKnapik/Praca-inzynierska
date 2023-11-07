@@ -79,82 +79,149 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
     }
 
     private void dispatchSelector(HttpServletRequest request, HttpServletResponse response, String action) throws ServletException, IOException {
-        /*
-        User currentUser =(User) session.getAttribute("currentUser");
-        if(currentUser==null) {
-
-            currentUser= new User();
-            session.setAttribute("currentUser",currentUser);
-        }
-        */
-
+        session = request.getSession();
         if (action == null) {
             RequestDispatcher dispatcher = null;
             dispatcher = request.getRequestDispatcher("index.jsp");
             dispatcher.forward(request, response);
-        } else if (action.equals("login")) {
-
-            login(request, response);
-
-        } else if (action.equals("register")) {
-
-            register(request, response);
-
-        } else if (action.equals("saveAnswer")) {
-
-            saveAnswer(request, response);
-
-        } else if (action.equals("saveAnswerWithSubmit")) {
-
-            saveAnswerWithSubmit(request, response);
-
-        } else if (action.equals("addTestTemplate")) {
-
-            try {
-                addTestTemplate(request, response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        } else if (action.equals("addTaskTemplate")) {
-            try {
-                addTaskTemplate(request, response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        } else if (action.equals("updateTestTemplate")) {
-
-            try {
-                updateTestTemplate(request, response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        } else if (action.equals("updateTaskTemplate")) {
-
-            try {
-                updateTaskTemplate(request, response);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-        } else if (action.equals("deleteTestTemplate")) {
-
-            deleteTestTemplate(request, response);
-
-        } else if (action.equals("deleteTaskTemplate")) {
-
-            deleteTaskTemplate(request, response);
-        } else if (action.equals("addUser")) {
-
-            addUser(request, response);
-
-        } else if (action.equals("openTest")) {
-            //System.out.println("GET request before opening test");
-            openTest(request, response);
-
         }
+        else {
+            if(session.getAttribute("currentUser") ==null) {
+                RequestDispatcher dispatcher = null;
+
+                String errors = "Sesja wygasła - zaloguj się ponownie";
+                dispatcher = request.getRequestDispatcher("index.jsp?webpage=loginErrors&targetPage=login&errors="+errors);
+                dispatcher.forward(request, response);
+            }
+            else if (action.equals("login")) {
+
+                login(request, response);
+
+            } else if (action.equals("register")) {
+
+                register(request, response);
+
+            } else if (action.equals("saveAnswer")) {
+
+                saveAnswer(request, response);
+
+            } else if (action.equals("saveAnswerWithSubmit")) {
+
+                saveAnswerWithSubmit(request, response);
+
+            } else if (action.equals("addTestTemplate")) {
+
+                try {
+                    addTestTemplate(request, response);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (action.equals("addTaskTemplate")) {
+                try {
+                    addTaskTemplate(request, response);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (action.equals("updateTestTemplate")) {
+
+                try {
+                    updateTestTemplate(request, response);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (action.equals("updateTaskTemplate")) {
+
+                try {
+                    updateTaskTemplate(request, response);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (action.equals("deleteTestTemplate")) {
+
+                deleteTestTemplate(request, response);
+
+            } else if (action.equals("deleteTaskTemplate")) {
+
+                deleteTaskTemplate(request, response);
+            } else if (action.equals("addUser")) {
+
+                addUser(request, response);
+
+            } else if (action.equals("updateUser")) {
+
+                updateUser(request, response);
+
+            } else if (action.equals("deleteUser")) {
+
+                deleteUser(request, response);
+
+            } else if (action.equals("openTest")) {
+                openTest(request, response);
+
+            }
+            else if (action.equals("gradeTask")) {
+                gradeTask(request, response);
+
+            }
+        }
+    }
+
+    private void gradeTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+
+        System.out.println("Grading task!");
+        session = request.getSession();
+        Integer taskId = (Integer.parseInt(request.getParameter("taskId")));
+
+        TaskDao taskDao = new TaskDao();
+        Task task = taskDao.getTaskById(taskId);
+        task.setGraded(Integer.parseInt(request.getParameter("score")));
+        task.setCorrected_answer(request.getParameter("correctedAnswer"));
+        taskDao.saveTask(task);
+        System.out.println("Saved grading task to db");
+
+        String testId = request.getParameter("testId");
+        int targetTask = Integer.parseInt(request.getParameter("targetTask"));
+
+        System.out.println("Sending back to grading");
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTest&testId="+testId+"&taskId="+targetTask);
+        dispatcher.forward(request, response);
+
+    }
+
+    private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        session = request.getSession();
+
+        userDao.deleteUserById(Integer.parseInt(request.getParameter("userId")));
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
+        dispatcher.forward(request, response);
+    }
+
+    private void updateUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        session = request.getSession();
+
+        User user = userDao.getUserById(Integer.parseInt(request.getParameter("userId")));
+
+        user.setUsername(request.getParameter("username"));
+        user.setPassword(Parser.bCryptPasswordEncoder().encode(request.getParameter("password1")));
+        user.setEmail(request.getParameter("email"));
+        user.setType(Integer.parseInt(request.getParameter("type")));
+        userDao.saveUser(user);
+
+
+        RequestDispatcher dispatcher = null;
+
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
+
+        dispatcher.forward(request, response);
+
     }
 /*
     @Override
@@ -201,7 +268,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             }
 
 
-            dispatcher = request.getRequestDispatcher("loginErrors.jsp?errors="+errors);
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=loginErrors&errors="+errors);
         }
 
         dispatcher.forward(request, response);

@@ -381,4 +381,34 @@ public class TestDao {
     }
 
 
+    public List<Test> getAllTests() {
+        Session session = null;
+        List<Test> tests = null;
+
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+
+            Query<Test> query= session.createQuery("from Test t");
+
+            tests = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(tests);
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return tests;
+
+    }
 }

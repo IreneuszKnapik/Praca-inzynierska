@@ -56,6 +56,9 @@
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskTemplates">Szablony zadań</a></button>
 </div>
+<div class="form-group">
+    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=gradingTests">Ocenianie testów</a></button>
+</div>
 <%}%>
 
 <div class="form-group">

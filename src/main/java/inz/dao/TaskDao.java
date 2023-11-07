@@ -291,6 +291,43 @@ public class TaskDao {
 
     }
 
+    public List<Task> getAllTasksByTest(Integer test_id) {
+
+        Session session = null;
+        List<Task> tasks = null;
+
+        try {
+            //System.out.print("Trying to get tasks for " + taskGroupUsername);
+            session = HibernateUtil.getSessionFactory().openSession();
+            //System.out.print(session.toString());
+
+
+
+            //Query<Users> query = session.createQuery("from inz.model.Users u where u.username= :username");
+
+            Query<Task> query= session.createQuery("select t from Task t WHERE t.test_id=:test_id");
+            query.setParameter("test_id",test_id);
+
+            tasks = query.list();
+            System.out.println(query.toString());
+            Hibernate.initialize(tasks);
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return tasks;
+    }
+
     public List<Task> getTasksByTest(Integer test_id, Integer user_id) {
 
         Session session = null;

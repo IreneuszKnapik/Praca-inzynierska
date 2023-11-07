@@ -14,9 +14,7 @@
                     <a class="nav-link" href="index.jsp?webpage=landing">O stronie</a>
                 </li>
 
-                <li class="navbar-item">
-                    <a class="nav-link" href="index.jsp?webpage=main">Menu</a>
-                </li>
+
 
                 <li class="navbar-item">
                     <a class="nav-link" href="index.jsp?webpage=register">Rejestracja</a>
@@ -26,7 +24,11 @@
                 <li class="navbar-item">
                     <a class="nav-link" href="index.jsp?webpage=login">Zaloguj się</a>
                 </li>
-
+                <% if(currentUser.getType() != null && currentUser.getType() > 0) {%>
+                <li class="navbar-item">
+                    <a class="nav-link" href="index.jsp?webpage=main">Menu</a>
+                </li>
+                <% }%>
             </ul>
         </div>
 

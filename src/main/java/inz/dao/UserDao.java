@@ -98,4 +98,68 @@ public class UserDao{
 
         return users;
     }
+
+    public User getUserById(Integer user_id) {
+        Session session = null;
+        User user = null;
+
+        try {
+            System.out.print("Trying to get user " + user_id);
+            session = HibernateUtil.getSessionFactory().openSession();
+
+            Query<User> query = session.createQuery("from User u where u.id = :user_id");
+            query.setParameter("user_id", user_id);
+            user = query.uniqueResult();
+            Hibernate.initialize(user);
+        }
+
+        catch (Exception e){
+
+            e.printStackTrace();
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+        return user;
+
+    }
+
+    public void deleteUserById(int userId) {
+        Session session = null;
+        Transaction transaction = null;
+
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            User u = session.get(User.class,userId);
+            if(u != null){
+                session.delete(u);
+            }
+
+            transaction.commit();
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+    }
 }
