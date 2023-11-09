@@ -5,9 +5,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Entity
 @Table(name="groups")
@@ -33,19 +31,37 @@ public class Group {
         this.name = name;
     }
 
-    @ManyToMany(mappedBy = "groups")
-    private Set<User> users = new HashSet<>();
+    public Map<Integer, User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Map<Integer, User> users) {
+        this.users = users;
+    }
+
+    public void addUser(User user) {
+        this.users.put(user.getId(),user);
+        user.getGroups().put(this.getId(),this);
+    }
+    public void removeUser(User user) {
+        this.users.remove(user.getId());
+        user.getGroups().remove(this.getId());
+
+    }
+
+    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @JoinTable(
+            name = "User_Group",
+            joinColumns = { @JoinColumn(name = "group_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
+    @javax.persistence.MapKey(name = "id")
+    @Fetch(FetchMode.JOIN)
+    private Map<Integer,User> users = new HashMap<>();
 
     @Column(name = "name")
     private String name;
 
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
 
     public String getDescription() {
         return description;

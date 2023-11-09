@@ -56,7 +56,7 @@
     }
 
     function saveAnswer () {
-        let baseUrl = "index?action=saveAnswer&taskId=<%=task.getId()%>&targetTest=<%=testId%>" + "&targetTask=" + this.taskId;
+        let baseUrl = "index?action=saveAnswer&user=<%=currentUser.getId()%>&taskId=<%=task.getId()%>&targetTest=<%=testId%>" + "&targetTask=" + this.taskId;
         let form = document.getElementById("testForm");
         form.action = baseUrl;
         form.submit();
@@ -155,7 +155,7 @@
         </table>
         <div id="answerEditor">
             <pre id="highlighting" aria-hidden="true">
-                <code id="highlighting-content" class="language-cpp h-100 w-100" ><%=answer%></code>
+                <code id="highlighting-content" class="language-cpp h-100 w-100" ></code>
             </pre>
             <textarea id="editing" name="answer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm">
 <%=answer%>

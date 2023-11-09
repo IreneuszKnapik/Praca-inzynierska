@@ -34,15 +34,12 @@ public class TaskDao {
 
     public void updateTask(Task task) {
 
-        Task newTask = getTaskById(task.getId());
-        newTask.setAnswer(task.getAnswer());
-
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             // start a transaction
             transaction = session.beginTransaction();
             // save the user object
-            session.update(newTask);
+            session.update(task);
             // commit transaction
             transaction.commit();
         } catch (Exception e) {

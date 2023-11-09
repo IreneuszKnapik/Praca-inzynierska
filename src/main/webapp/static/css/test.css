@@ -34,7 +34,7 @@
     height: 100%;
 }
 
-#highlighting {
+#highlighting, #highlightingOriginal {
     overflow: hidden;
     z-index: 0;
     width: 100%;

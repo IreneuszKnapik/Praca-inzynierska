@@ -23,8 +23,8 @@ public class HibernateUtil {
                 settings.put(Environment.URL, "jdbc:mysql://localhost:3306/inzynier_db?useSSL=false");
                 settings.put(Environment.USER, "admin");
                 settings.put(Environment.PASS, "inzynier_db");
-                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
-
+                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
+                settings.put(Environment.STORAGE_ENGINE, "InnoDB");
                 settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
                 settings.put(Environment.HBM2DDL_AUTO, "validate");

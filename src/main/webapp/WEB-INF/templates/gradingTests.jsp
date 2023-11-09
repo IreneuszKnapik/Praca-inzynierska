@@ -60,7 +60,7 @@
                 <%=tests.get(i).getGrade()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=gradingTest&testId=<%=tests.get(i).getId()%>&taskId=0">Oceń test</a></button>
+                <button class="btn btn-block "><a href="index.jsp?webpage=gradingTest&testId=<%=tests.get(i).getId()%>&taskPos=0">Oceń test</a></button>
             </td>
         </tr>
 

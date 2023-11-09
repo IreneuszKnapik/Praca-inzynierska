@@ -48,6 +48,9 @@
 <div class="form-group">
     <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=users">Zarządzanie uzytkownikami</a></button>
 </div>
+<div class="form-group">
+    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=groups">Zarządzanie grupami</a></button>
+</div>
 <%}%>
 <%if(currentUser.getType() > 1){%>
 <div class="form-group">

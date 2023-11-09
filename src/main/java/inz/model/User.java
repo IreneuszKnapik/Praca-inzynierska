@@ -1,9 +1,12 @@
 package inz.model;
 
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name="users")
@@ -40,13 +43,24 @@ public class User {
     //2 is creator - also creates tests and sees answers
     //3 is admin - can access everything
 
+
+    public Map<Integer, Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Map<Integer, Group> groups) {
+        this.groups = groups;
+    }
+
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(
             name = "User_Group",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "group_id") }
     )
-    Set<Group> groups = new HashSet<>();
+    @javax.persistence.MapKey(name = "id")
+    @Fetch(FetchMode.JOIN)
+    private Map<Integer,Group> groups = new HashMap<>();
 
     public User() {
 

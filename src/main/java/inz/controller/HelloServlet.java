@@ -159,6 +159,18 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
                 deleteUser(request, response);
 
+            }else if (action.equals("addGroup")) {
+
+                addGroup(request, response);
+
+            }else if (action.equals("updateGroup")) {
+
+                updateGroup(request, response);
+
+            }else if (action.equals("deleteGroup")) {
+
+                deleteGroup(request, response);
+
             } else if (action.equals("openTest")) {
                 openTest(request, response);
 
@@ -168,6 +180,71 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
             }
         }
+    }
+
+    private void deleteGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        session = request.getSession();
+
+        GroupDao groupDao = new GroupDao();
+
+        groupDao.deleteGroupById(Integer.parseInt(request.getParameter("groupId")));
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups)");
+        dispatcher.forward(request, response);
+    }
+
+    private void updateGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        session = request.getSession();
+
+        GroupDao groupDao = new GroupDao();
+
+        int groupId = Integer.parseInt(request.getParameter("groupId"));
+
+        Group group = groupDao.getGroupById(groupId);
+        group.setDescription(request.getParameter("groupDescription"));
+        group.setName(request.getParameter("groupName"));
+
+        String[] users = request.getParameter( "userChanges").split(",");
+        if(users[0].equals("0") ){
+
+        }
+        else{
+            UserDao userDao = new UserDao();
+
+            for (int i = 0; i < users.length; i++) {
+                System.out.println("userID being flipped: " + Integer.parseInt(users[i]));
+                User user = userDao.getUserById(Integer.parseInt(users[i]));
+
+                if( group.getUsers().containsKey(user.getId())){
+                    group.removeUser(user);
+                }
+                else{
+                    group.addUser(user);
+                }
+            }
+        }
+
+        groupDao.updateGroup(group);
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups)");
+        dispatcher.forward(request, response);
+    }
+
+    private void addGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        session = request.getSession();
+
+        GroupDao groupDao = new GroupDao();
+        Group newGroup = new Group();
+
+        newGroup.setDescription(request.getParameter("groupDescription"));
+        newGroup.setName(request.getParameter("groupName"));
+        groupDao.saveGroup(newGroup);
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups)");
+        dispatcher.forward(request, response);
     }
 
     private void gradeTask(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -180,16 +257,16 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         Task task = taskDao.getTaskById(taskId);
         task.setGraded(Integer.parseInt(request.getParameter("score")));
         task.setCorrected_answer(request.getParameter("correctedAnswer"));
-        taskDao.saveTask(task);
+        taskDao.updateTask(task);
         System.out.println("Saved grading task to db");
 
         String testId = request.getParameter("testId");
-        int targetTask = Integer.parseInt(request.getParameter("targetTask"));
+        int taskPos = Integer.parseInt(request.getParameter("taskPos"));
 
         System.out.println("Sending back to grading");
 
         RequestDispatcher dispatcher = null;
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTest&testId="+testId+"&taskId="+targetTask);
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTest&testId="+testId+"&taskPos="+taskPos);
         dispatcher.forward(request, response);
 
     }
@@ -197,6 +274,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session = request.getSession();
 
+        UserDao userDao = new UserDao();
         userDao.deleteUserById(Integer.parseInt(request.getParameter("userId")));
 
         RequestDispatcher dispatcher = null;
@@ -207,19 +285,46 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
     private void updateUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         session = request.getSession();
 
-        User user = userDao.getUserById(Integer.parseInt(request.getParameter("userId")));
+        UserDao userDao = new UserDao();
+        String errors = "";
 
-        user.setUsername(request.getParameter("username"));
+        User user = userDao.getUserById(Integer.parseInt(request.getParameter("userId")));
+        String username = request.getParameter("username");
+        if(!username.equals(user.getUsername())){ //check if username is taken only if it changes
+            User userCheck = userDao.getUserByUsername(username);
+
+            if(userCheck == null ){
+                user.setUsername(username);
+            }
+            else{
+                errors = "Użytkownik o podanej nazwie "+ username +" już istnieje";
+
+            }
+        }
+
+
+
+
+
+
+
         user.setPassword(Parser.bCryptPasswordEncoder().encode(request.getParameter("password1")));
         user.setEmail(request.getParameter("email"));
         user.setType(Integer.parseInt(request.getParameter("type")));
-        userDao.saveUser(user);
+        userDao.updateUser(user);
 
 
         RequestDispatcher dispatcher = null;
 
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
+        if(errors.equals("")){
 
+            userDao.updateUser(user);
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=users");
+                 }
+        else{
+            request.setCharacterEncoding("UTF-8");
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=error&targetPage=users&errors="+errors);
+        }
         dispatcher.forward(request, response);
 
     }
@@ -317,7 +422,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             newUser.setUsername(username);
         }
         else{
-            errors = "uzytkownik o podanej nazwie "+ username +" już istnieje";
+            errors = "Użytkownik o podanej nazwie "+ username +" już istnieje";
 
         }
 
@@ -551,9 +656,8 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         session = request.getSession();
         TaskDao taskDao = new TaskDao();
-        Task task = new Task();
 
-        task.setId(Integer.parseInt(request.getParameter("taskId")));
+        Task task = taskDao.getTaskById(Integer.parseInt(request.getParameter("taskId")));
         task.setAnswer(request.getParameter("answer"));
 
 
@@ -577,13 +681,10 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         session = request.getSession();
         TaskDao taskDao = new TaskDao();
-        Task task = new Task();
 
-        task.setId(Integer.parseInt(request.getParameter("taskId")));
+        Task task = taskDao.getTaskById(Integer.parseInt(request.getParameter("taskId")));
         task.setAnswer(request.getParameter("answer"));
-
-        Integer user_id =  Integer.parseInt(request.getParameter("user"));
-        taskDao.saveTask(task);
+        taskDao.updateTask(task);
 
         Integer test_id =  Integer.parseInt(request.getParameter("test"));
         taskDao.submitTest(test_id);

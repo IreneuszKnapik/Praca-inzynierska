@@ -75,7 +75,10 @@ public class Parser {
                 "editTestTemplate;" +
                 "users;" +
                 "addUser;" +
-                "editUser;";
+                "editUser;" +
+                "groups;"+
+                "addGroup;" +
+                "editGroup;";
 
         String output = "landing";
         String[] pages = pattern.split(";");

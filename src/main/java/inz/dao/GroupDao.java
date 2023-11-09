@@ -2,6 +2,7 @@ package inz.dao;
 
 import inz.model.Group;
 import inz.model.TestTemplate;
+import inz.model.User;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -177,5 +178,97 @@ public class GroupDao {
         }
 
         return groupIDs;
+    }
+
+    public List<String> getUserIDfromGroup(Integer group_id) {
+
+        Group group = null;
+
+        List<String> userIDs = new ArrayList<>();
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+
+            Query<Group> query= session.createQuery("from Group g  WHERE g.id=:group_id");
+
+            //"from TestTemplate t WHERE t.id IN ( select testtemplate_id from user where g.user_id=:user_id ) AND allowed_attempts != 0");
+            query.setParameter("group_id",group_id);
+
+            group = query.uniqueResult();
+            Hibernate.initialize(group);
+
+            System.out.println(group.toString());
+
+            Map<Integer, User> users =  group.getUsers();
+
+            for (Integer i : users.keySet()) {
+                userIDs.add(String.valueOf(i));
+            }
+
+            System.out.println(userIDs);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+
+        return userIDs;
+    }
+
+    public void updateGroup(Group group) {
+
+            Transaction transaction = null;
+            try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                // start a transaction
+                transaction = session.beginTransaction();
+                // save the user object
+                session.update(group);
+                // commit transaction
+                transaction.commit();
+            } catch (Exception e) {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+                e.printStackTrace();
+            }
+
+    }
+
+    public void deleteGroupById(int groupId) {
+        Session session = null;
+        Transaction transaction = null;
+
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Group g = session.get(Group.class,groupId);
+            if(g != null){
+                session.delete(g);
+            }
+
+            transaction.commit();
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
     }
 }
