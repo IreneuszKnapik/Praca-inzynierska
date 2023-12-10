@@ -15,11 +15,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
 
 
 @WebServlet("/index")
@@ -62,6 +64,8 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         }
         */
         response.setContentType("text/html");
+        response.setCharacterEncoding("utf-8");
+        request.setCharacterEncoding("utf-8");
 
         String action = request.getParameter("action");
         System.out.println("action:" + action);
@@ -71,6 +75,9 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("text/html");
+        response.setCharacterEncoding("utf-8");
+        request.setCharacterEncoding("utf-8");
+
 
         String action = request.getParameter("action");
         System.out.println("action:" + action);
@@ -80,6 +87,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
     private void dispatchSelector(HttpServletRequest request, HttpServletResponse response, String action) throws ServletException, IOException {
         session = request.getSession();
+
         if (action == null) {
             RequestDispatcher dispatcher = null;
             dispatcher = request.getRequestDispatcher("index.jsp");
@@ -179,7 +187,142 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
                 gradeTask(request, response);
 
             }
+            else if (action.equals("markTest")) {
+                markTest(request, response);
+
+            }
+            else if(action.equals("testCode")) {
+                testCode(request, response);
+            }
         }
+    }
+
+    private void testCode(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        TaskDao taskDao = new TaskDao();
+
+        String codeOutput = "";
+
+        String testId = request.getParameter("testId");
+        String taskId = request.getParameter("taskId");
+        int taskPos = Integer.parseInt(request.getParameter("taskPos"));
+
+        String fileName = "gradingcode" + "_" + testId +  "_" + taskId +  "_" +System.currentTimeMillis();
+
+        String codeInput = taskDao.getTaskById(Integer.valueOf(taskId)).getAnswer();
+
+
+
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\inz_code\\"+fileName + ".cpp"));
+        writer.write(codeInput);
+        writer.close();
+
+        Process compileProcess = null;
+        StringBuilder compileErrors = new StringBuilder("");
+        /*
+        File myObj = new File("C:\\inz_code\\output"+fileName+".exe");
+        if (myObj.createNewFile()) {
+            System.out.println("File created: " + myObj.getName());
+        } else {
+            System.out.println("File already exists.");
+        }
+*/
+        try {
+            ProcessBuilder pb;
+            pb = new ProcessBuilder("C:\\MinGW\\bin\\g++.exe","C:\\inz_code\\"+fileName+".cpp","-o","C:\\inz_code\\output"+fileName+".exe");
+
+            compileProcess = pb.start();
+            compileProcess.waitFor(5, TimeUnit.SECONDS);  // let the process run for 5 seconds
+
+
+            InputStream inputStream = compileProcess.getErrorStream();
+            BufferedReader reader = new BufferedReader (new InputStreamReader(inputStream));
+
+            String line1=null;
+            while ((line1 = reader.readLine()) != null) {
+                compileErrors.append(line1.substring(line1.indexOf(".cpp:") + 5));
+                compileErrors.append("\n");
+            }
+
+            System.out.print("Compile Errors: "+ compileErrors);
+
+            compileProcess.destroy();// tell the process to stop
+            compileProcess.waitFor(10, TimeUnit.SECONDS); // give it a chance to stop
+            compileProcess.destroyForcibly();             // tell the OS to kill the process
+            compileProcess.waitFor();                     // the process is now dead
+
+        }
+        catch (Exception ex)
+
+            {
+
+                ex.printStackTrace();
+
+
+            }
+
+        if (!compileErrors.toString().equals("")){
+            codeOutput = compileErrors.toString();
+        }
+        else{
+            try {
+                ProcessBuilder pb=new ProcessBuilder();
+                pb = new ProcessBuilder("C:\\inz_code\\output"+fileName+".exe");
+
+                Process process = pb.start();
+                process.waitFor(5, TimeUnit.SECONDS);  // let the process run for 5 seconds
+
+                InputStream inputStream = process.getInputStream();
+                BufferedReader reader = new BufferedReader (new InputStreamReader(inputStream));
+
+                String line1=null;
+                while ((line1 = reader.readLine()) != null) {
+                    codeOutput += line1;
+                }
+
+                process.destroy();// tell the process to stop
+                process.waitFor(10, TimeUnit.SECONDS); // give it a chance to stop
+                process.destroyForcibly();             // tell the OS to kill the process
+                process.waitFor();                     // the process is now dead
+
+                System.out.println("Code output: " + codeOutput);
+
+                int x = process.exitValue();
+                System.out.println("Exit value: " + x);
+            }
+            catch (Exception ex)
+
+            {
+                ex.printStackTrace();
+            }
+        }
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTest&testId="+testId+"&taskPos="+taskPos+"&codeOutput="+codeOutput);
+        dispatcher.forward(request, response);
+
+
+
+
+    }
+
+    private void markTest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        session = request.getSession();
+
+        TestDao testDao = new TestDao();
+
+        Integer testId = Integer.valueOf(request.getParameter("testId"));
+        Integer testGrade = Integer.valueOf(request.getParameter("gradeTest"));
+
+        Test test = testDao.getTestById(testId);
+        test.setGrade(testGrade);
+        testDao.updateTest(test);
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTests");
+        dispatcher.forward(request, response);
+
     }
 
     private void deleteGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -190,7 +333,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         groupDao.deleteGroupById(Integer.parseInt(request.getParameter("groupId")));
 
         RequestDispatcher dispatcher = null;
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups)");
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups");
         dispatcher.forward(request, response);
     }
 
@@ -228,7 +371,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         groupDao.updateGroup(group);
 
         RequestDispatcher dispatcher = null;
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups)");
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups");
         dispatcher.forward(request, response);
     }
 
@@ -243,7 +386,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         groupDao.saveGroup(newGroup);
 
         RequestDispatcher dispatcher = null;
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups)");
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=groups");
         dispatcher.forward(request, response);
     }
 

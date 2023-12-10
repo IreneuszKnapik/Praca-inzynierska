@@ -76,7 +76,7 @@ public class Parser {
                 "users;" +
                 "addUser;" +
                 "editUser;" +
-                "groups;"+
+                "groups;" +
                 "addGroup;" +
                 "editGroup;";
 

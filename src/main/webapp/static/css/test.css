@@ -17,6 +17,7 @@
 #answerEditor {
     display: grid;
     position:relative;
+    padding-bottom: 10px;
 }
 
 #editing, #highlighting, #highlightingOriginal{
@@ -30,14 +31,14 @@
 
     z-index: 1;
     resize: none;
-    width: 100%;
+    width: 75%;
     height: 100%;
 }
 
 #highlighting, #highlightingOriginal {
     overflow: hidden;
     z-index: 0;
-    width: 100%;
+    width: 75%;
     height: 100%;
 }
 

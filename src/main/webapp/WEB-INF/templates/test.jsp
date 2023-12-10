@@ -8,7 +8,7 @@
 <%@ page import="inz.dao.TaskDao" %>
 <%@ page import="inz.model.TaskGroup" %>
 <%@ page import="inz.model.Task" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <jsp:useBean id="currentUser" class="inz.model.User" scope="session"/>
 
 <%@page buffer="8192kb" autoFlush="false" %>
@@ -162,7 +162,7 @@
             </textarea>
         </div>
 
-        <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);saveAnswer()" form ="testForm" class="btn">Zapisz</button>
+
         <button style="display:inline-block;margin:5px" onclick="setTaskId(<%=taskId%>);saveAnswerWithSubmit()" form ="testForm" class="btn">Wyślij test do oceny</button>
 
     </form>

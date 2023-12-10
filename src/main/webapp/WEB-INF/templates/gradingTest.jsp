@@ -25,6 +25,8 @@
     String corrected_answer = "";
     int taskPos = 0;
     int score = 0;
+    String codeOutput = null;
+    codeOutput = request.getParameter("codeOutput");
     if(!tasks.isEmpty()){
         taskPos= Integer.parseInt(request.getParameter("taskPos"));
         System.out.print("taskId " + taskPos +" \n");
@@ -95,7 +97,7 @@
                         <%=task.getDescription()%>
                     </td>
                     <td>
-                        <%=task.getScore()%>
+                        <%=task.getGraded()%>/<%=task.getScore()%>
                     </td>
                 </tr>
 
@@ -108,23 +110,45 @@
                         <code id="highlighting-content-originalAnswer" readonly class="language-cpp h-100 w-100" ></code>
                         </pre>
                 <textarea id="originalAnswer" spellcheck="false" aria-hidden="true" hidden><%=answer%></textarea>
-                <p>Poprawiona odpowiedź</p>
+                <button style="display:inline-block;margin:5px" onclick="testCode()" class="btn">Testuj kod</button>
+
             </div>
+            <% if(codeOutput != null){ %>
+            <p>Wynik testowania kodu:</p>
+            <textarea  class="h-100 w-100" ><%=codeOutput%></textarea>
+            <% } %>
+            <p>Poprawiona odpowiedź, komentarze oceniającego</p>
             <div id="answerEditor">
                 <pre id="highlighting" aria-hidden="true">
                     <code id="highlighting-content" class="language-cpp h-100 w-100" ><%=corrected_answer%></code>
                 </pre>
                 <textarea id="editing" name="correctedAnswer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm"><%=corrected_answer%></textarea>
             </div>
+            <p>Ilość zdobytych punktów</p>
+            <div>
+                <input type="number" class="form-control item" name="score" form="testForm" required="required" min="0" max="<%=task.getScore()%>" defaultValue="<%=score%>" value="<%=score%>">
+                <button style="display:inline-block;margin:5px" onclick="setTaskPos(<%=taskPos%>);saveGrading()" form ="testForm" class="btn">Zapisz</button>
+            </div>
+            <p>Ilość zdobytych punktów ze wszsystkich zadań</p>
+            <%
+                int currSum = 0;
+                int totalSum = 0;
+                for(int i=0;i<tasks.size();i++) {
+                        currSum += tasks.get(i).getGraded();
+                        totalSum += tasks.get(i).getScore();
+                }
+            %>
+            <%=currSum%>/<%=totalSum%>
 
+            <p>Ocena za cały test</p>
+            <div>
+                <input type="number" class="form-control item" name="gradeTest" min="1" max="6" defaultValue="" value="0">
+                <button style="display:inline-block;margin:5px" onclick="markTest()" class="btn">Wystaw ocenę za cały test</button>
+            </div>
 
         </form>
     </div>
-<div>
-    <input type="number" class="form-control item" name="score" form="testForm" required="required" min="0" max="<%=task.getScore()%>" defaultValue="<%=score%>" value="<%=score%>">
-    <button style="display:inline-block;margin:5px" onclick="setTaskPos(<%=taskPos%>);saveGrading()" form ="testForm" class="btn">Zapisz</button>
 
-</div>
 
     <%}%>
 
@@ -137,6 +161,7 @@
     let taskPos;
 
     window.onload = function (){
+        setTaskPos(0);
         let loadPrism = document.createElement("script");
         loadPrism.type = 'text/javascript';
         loadPrism.src = "${pageContext.request.contextPath}/static/prism/prism.js";
@@ -165,6 +190,19 @@
     <% if(!tasks.isEmpty()){ %>
     function saveGrading () {
         let baseUrl = "index?action=gradeTask&taskPos="+this.taskPos+"&testId=<%=testId%>&taskId=<%=task.getId()%>";
+        let form = document.getElementById("testForm");
+        form.action = baseUrl;
+        form.submit();
+    }
+
+    function markTest () {
+        let baseUrl = "index?action=markTest&testId=<%=testId%>";
+        let form = document.getElementById("testForm");
+        form.action = baseUrl;
+        form.submit();
+    }
+    function testCode () {
+        let baseUrl = "index?action=testCode&taskPos="+this.taskPos+ "&testId=<%=testId%>&taskId=<%=task.getId()%>";
         let form = document.getElementById("testForm");
         form.action = baseUrl;
         form.submit();

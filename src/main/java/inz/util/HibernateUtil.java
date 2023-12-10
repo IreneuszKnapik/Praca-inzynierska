@@ -20,7 +20,7 @@ public class HibernateUtil {
                 // Hibernate settings equivalent to hibernate.cfg.xml's properties
                 Properties settings = new Properties();
                 settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/inzynier_db?useSSL=false");
+                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/inzynier_db?useSSL=false&characterEncoding=utf-8");
                 settings.put(Environment.USER, "admin");
                 settings.put(Environment.PASS, "inzynier_db");
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");

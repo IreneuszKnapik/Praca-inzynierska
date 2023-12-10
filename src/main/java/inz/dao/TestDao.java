@@ -57,6 +57,24 @@ public class TestDao {
             e.printStackTrace();
         }
     }
+    public void updateTest(Test test) {
+
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the user object
+            session.update(test);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
 
     public void saveTest(Test test) {
         Transaction transaction = null;
@@ -410,5 +428,31 @@ public class TestDao {
 
         return tests;
 
+    }
+
+    public Test getTestById(Integer test_id) {
+        Test test = null;
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()){
+
+            transaction = session.beginTransaction();
+
+            Query<Test> query= session.createQuery("FROM Test t WHERE t.id=:test_id ");
+
+            //"from TestTemplate t WHERE t.id IN ( select testtemplate_id from user where g.user_id=:user_id ) AND allowed_attempts != 0");
+            query.setParameter("test_id",test_id);
+
+            test = query.uniqueResult();
+            Hibernate.initialize(test);
+
+            transaction.commit();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return test;
     }
 }
