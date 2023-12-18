@@ -18,7 +18,7 @@
     <title>Admin - <%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 
 <%if(groups.isEmpty()){%>
 <h2 class="text-center">Użytkownik nie należy do żadnej grupy</h2>
@@ -50,7 +50,7 @@
 <%}%>
 
 <div class="form-group">
-    <button type="submit" class="btn btn-block register-button submit"><a href="index.jsp?webpage=taskTemplates">Szablony testów</a></button>
+    <button type="submit" class="btn  register-button submit"><a href="index.jsp?webpage=taskTemplates">Szablony testów</a></button>
 </div>
 
 </body>

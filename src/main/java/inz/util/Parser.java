@@ -16,7 +16,7 @@ public class Parser {
     }
 
     public static String isGoodPasswd(String password){
-        if (password.length() < 13){
+        if (password.length() < 10){
             return "short";
         }
 

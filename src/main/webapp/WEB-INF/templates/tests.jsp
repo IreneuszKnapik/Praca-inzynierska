@@ -21,7 +21,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 
 <%if(testTemplates.isEmpty()){%>
 <h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>

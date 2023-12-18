@@ -85,7 +85,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 <h2 class="text-center">Edytuj test </h2>
 <div>
     <form id="editTestForm" method="post" enctype="multipart/form-data">
@@ -159,7 +159,7 @@
         </table>
 
         <div class="form-group">
-            <button onclick="saveTestTemplate()" class="btn btn-block">Zapisz zmiany</button>
+            <button onclick="saveTestTemplate()" class="btn ">Zapisz zmiany</button>
         </div>
     </form>
 

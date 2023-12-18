@@ -40,15 +40,15 @@
 </head>
 <body>
 
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 
 <%if(testTemplates.isEmpty()){%>
 <h2 class="text-center">W bazie nie ma żadnych szablonów testów</h2>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addTestTemplate">Dodaj test</a></button>
+<button  class="btn  "><a href="index.jsp?webpage=addTestTemplate">Dodaj test</a></button>
 
 <%
 } else{ %>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addTestTemplate">Dodaj test</a></button>
+<button  class="btn  "><a href="index.jsp?webpage=addTestTemplate">Dodaj test</a></button>
 <table id="groups" class="table table-active">
     <tr>
         <th scope="col" class="text-center">Id</th>
@@ -67,10 +67,10 @@
                 <%=testTemplates.get(i).getDescription()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=editTestTemplate&testTemplateId=<%=testTemplates.get(i).getId()%>">Edytuj test</a></button>
+                <button class="btn  "><a href="index.jsp?webpage=editTestTemplate&testTemplateId=<%=testTemplates.get(i).getId()%>">Edytuj test</a></button>
             </td>
             <td>
-                <button class="btn btn-block" onclick="deleteTest(<%=testTemplates.get(i).getId()%>)"> Usuń test</button>
+                <button class="btn " onclick="deleteTest(<%=testTemplates.get(i).getId()%>)"> Usuń test</button>
             </td>
         </tr>
 

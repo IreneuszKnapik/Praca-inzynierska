@@ -35,20 +35,20 @@
 </head>
 <body>
 <%if(groups.isEmpty()){%>
-<h2 class="text-center">Żadne grupy nie zostali pobrani z bazy</h2>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button>
+<h2 class="text-center">Żadne grupy nie zostały pobrane z bazy</h2>
+<button  class="btn btn-success "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button>
 <%
 } else{ %>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button>
+<button  class="btn btn-success "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button>
+<div class="container p-3">
+    <table id="groups" class="table table-active table-condensed">
+        <tr>
+            <th scope="col" >Id</th>
+            <th scope="col" >Nazwa grupy</th>
+            <th scope="col" >Opis grupy</th>
 
-<table id="groups" class="table table-active">
-    <tr>
-        <th scope="col" class="text-center">Id</th>
-        <th scope="col" class="text-center">Nazwa grupy</th>
-        <th scope="col" class="text-center">Opis grupy</th>
-
-    </tr>
-    <% for(int i=0;i<groups.size();i++) { %>
+        </tr>
+        <% for(int i=0;i<groups.size();i++) { %>
         <tr>
             <td>
                 <%=groups.get(i).getId()%>
@@ -60,16 +60,18 @@
                 <%=groups.get(i).getDescription()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=editGroup&groupId=<%=groups.get(i).getId()%>">Edytuj grupę</a></button>
+                <button class="btn btn-warning" ><a href="index.jsp?webpage=editGroup&groupId=<%=groups.get(i).getId()%>">Edytuj grupę</a></button>
             </td>
             <td>
-                <button class="btn btn-block" onclick="deleteGroup(<%=groups.get(i).getId()%>)"> Usuń grupę</button>
+                <button class="btn btn-danger" onclick="deleteGroup(<%=groups.get(i).getId()%>)"> Usuń grupę</button>
             </td>
 
         </tr>
 
-<%}%>
-</table>
+        <%}%>
+    </table>
+</div>
+
 
 <%}%>
 

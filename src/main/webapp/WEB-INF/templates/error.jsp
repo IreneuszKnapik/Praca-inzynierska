@@ -15,5 +15,5 @@
 <body>
 <p><%=request.getParameter("errors")%></p>
 
-<button type="submit" class="btn btn-block"><a href="index.jsp?webpage=<%= request.getParameter("targetPage") %>">Powrót</a></button>
+<button type="submit" class="btn "><a href="index.jsp?webpage=<%= request.getParameter("targetPage") %>">Powrót</a></button>
 </body>

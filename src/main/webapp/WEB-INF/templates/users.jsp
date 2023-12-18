@@ -35,10 +35,10 @@
 <body>
 <%if(users.isEmpty()){%>
 <h2 class="text-center">Żadni użytkownicy nie zostali pobrani z bazy</h2>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addUser">Dodaj użytkownika</a></button>
+<button  class="btn  "><a href="index.jsp?webpage=addUser">Dodaj użytkownika</a></button>
 <%
 } else{ %>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addUser">Dodaj użytkownika</a></button>
+<button  class="btn  "><a href="index.jsp?webpage=addUser">Dodaj użytkownika</a></button>
 
 <table id="groups" class="table table-active">
     <tr>
@@ -64,10 +64,10 @@
                 <%=users.get(i).getType()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=editUser&userId=<%=users.get(i).getId()%>">Edytuj użytkownika</a></button>
+                <button class="btn  "><a href="index.jsp?webpage=editUser&userId=<%=users.get(i).getId()%>">Edytuj użytkownika</a></button>
             </td>
             <td>
-                <button class="btn btn-block" onclick="deleteUser(<%=users.get(i).getId()%>)"> Usuń użytkownika</button>
+                <button class="btn " onclick="deleteUser(<%=users.get(i).getId()%>)"> Usuń użytkownika</button>
             </td>
 
         </tr>

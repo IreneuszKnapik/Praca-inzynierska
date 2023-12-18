@@ -60,7 +60,7 @@
 <body>
 
 
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 <p>Id testu:<%=testId%> </p>
 
 <%if(tasks.isEmpty()){%>
@@ -202,7 +202,7 @@
         form.submit();
     }
     function testCode () {
-        let baseUrl = "index?action=testCode&taskPos="+this.taskPos+ "&testId=<%=testId%>&taskId=<%=task.getId()%>";
+        let baseUrl = "index?action=testCode&taskPos="+this.taskPos+ "&testId=<%=testId%>&taskId=<%=task.getId()%>&target=grading";
         let form = document.getElementById("testForm");
         form.action = baseUrl;
         form.submit();

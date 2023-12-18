@@ -30,7 +30,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 <h2 class="text-center">Dodaj nowy test do bazy</h2>
 <div>
     <form id="addTaskForm" method="post" enctype="multipart/form-data">
@@ -48,7 +48,7 @@
         </div>
 
         <div class="form-group">
-            <button onclick="saveTaskTemplate()" class="btn btn-block">Dodaj test</button>
+            <button onclick="saveTaskTemplate()" class="btn ">Dodaj test</button>
         </div>
     </form>
 

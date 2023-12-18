@@ -43,15 +43,15 @@
 </head>
 <body>
 
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 
 <%if(taskTemplates.isEmpty()){%>
 <h2 class="text-center">W bazie nie ma żadnych zadań</h2>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addTaskTemplate">Dodaj zadanie</a></button>
+<button  class="btn  "><a href="index.jsp?webpage=addTaskTemplate">Dodaj zadanie</a></button>
 
 <%
 } else{ %>
-<button  class="btn btn-block "><a href="index.jsp?webpage=addTaskTemplate">Dodaj zadanie</a></button>
+<button  class="btn  "><a href="index.jsp?webpage=addTaskTemplate">Dodaj zadanie</a></button>
 <table id="groups" class="table table-active">
     <tr>
         <th scope="col" class="text-center">Id</th>
@@ -75,10 +75,10 @@
                 <%=taskTemplates.get(i).getScore()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=editTaskTemplate&taskTemplateId=<%=taskTemplates.get(i).getId()%>">Edytuj zadanie</a></button>
+                <button class="btn  "><a href="index.jsp?webpage=editTaskTemplate&taskTemplateId=<%=taskTemplates.get(i).getId()%>">Edytuj zadanie</a></button>
             </td>
             <td>
-                <button class="btn btn-block" onclick="deleteTaskTemplate(<%=taskTemplates.get(i).getId()%>)"> Usuń zadanie</button>
+                <button class="btn " onclick="deleteTaskTemplate(<%=taskTemplates.get(i).getId()%>)"> Usuń zadanie</button>
             </td>
         </tr>
 

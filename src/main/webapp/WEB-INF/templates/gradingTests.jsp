@@ -23,7 +23,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 
 <% if(tests.isEmpty()){%>
 <h2 class="text-center">Nie ma żadnych testów do oceny</h2>
@@ -60,7 +60,7 @@
                 <%=tests.get(i).getGrade()%>
             </td>
             <td>
-                <button class="btn btn-block "><a href="index.jsp?webpage=gradingTest&testId=<%=tests.get(i).getId()%>&taskPos=0">Oceń test</a></button>
+                <button class="btn  "><a href="index.jsp?webpage=gradingTest&testId=<%=tests.get(i).getId()%>&taskPos=0">Oceń test</a></button>
             </td>
         </tr>
 

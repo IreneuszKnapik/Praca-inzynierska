@@ -4,6 +4,7 @@ package inz.controller;
 import inz.dao.*;
 import inz.model.*;
 import inz.util.Parser;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,21 +17,42 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+import static org.springframework.web.util.HtmlUtils.htmlUnescape;
+
 
 
 
 @WebServlet("/index")
 @MultipartConfig
+@Configuration
 @EnableWebMvc
 public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
     private UserDao userDao;
     public HttpSession session;
+    private HashMap<String,Process> codeTests;
 
+/*
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        System.out.println("Resource handlers added!");
+        registry
+                .addResourceHandler("/resources/**")
+                .addResourceLocations("/static/")
+                .addResourceLocations("/static/css/")
+                .addResourceLocations("/css/bootstrap-4.0.0-dist/startbootstrap-one-page-wonder-gh-pages/css/")
+                .addResourceLocations("/static/bootstrap-4.0.0-dist/css/")
+                .addResourceLocations("/static/prism/");
+    }
+
+*/
 
     public void init(){
         userDao = new UserDao();
@@ -46,6 +68,15 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             admin2.setType(3);
             userDao.saveUser(admin2);
         }
+
+        codeTests = new HashMap<String,Process>();
+
+        String host = "localhost";
+        int port = 5057;
+
+
+        Thread ServerThread1 = new Thread(new TestServer(new InetSocketAddress(host, port)));
+        ServerThread1.start();
 
         //System.out.print(admin.getId() + " " + admin.getUsername() + " " + admin.getPassword() + " "+ admin.getEmail());
 
@@ -104,6 +135,10 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             else if (action.equals("login")) {
 
                 login(request, response);
+
+            }else if (action.equals("logout")) {
+
+                logout(request, response);
 
             } else if (action.equals("register")) {
 
@@ -194,10 +229,283 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
             else if(action.equals("testCode")) {
                 testCode(request, response);
             }
+            else if(action.equals("testCodeCompile")) {
+                testCodeCompile(request, response);
+            }
+            else if(action.equals("testCodeRun")) {
+                testCodeRun(request, response);
+            }
+            else if(action.equals("testCodeInput")) {
+                testCodeInput(request, response);
+            }
+            else if(action.equals("testCodeOutput")) {
+                testCodeOutput(request, response);
+            }
+            else if(action.equals("testCodeIO")) {
+                testCodeIO(request, response);
+            }
+            else if(action.equals("testCodeSocket")) {
+                testCodeIO(request, response);
+            }
         }
     }
 
-    private void testCode(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        session = request.getSession();
+        session.invalidate();
+
+        RequestDispatcher dispatcher = null;
+        dispatcher = request.getRequestDispatcher("index.jsp?webpage=landing");
+        dispatcher.forward(request, response);
+    }
+    private void testCodeIO(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String execName = request.getParameter("execName");
+        String argument = request.getParameter("argument");
+        System.out.println("Argument: "+ argument);
+        String output = "";
+        if(codeTests.containsKey(execName)) {
+            System.out.println("Process exists: " + execName);
+            Process process = codeTests.get(execName);
+
+            if(!argument.equals("")){
+                System.out.println("Argument is not empty");
+                OutputStream outputStream = process.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+
+                writer.write(argument);
+            }
+
+            System.out.println("outputting output");
+
+            InputStream inputStream = process.getInputStream();
+            BufferedReader reader = new BufferedReader (new InputStreamReader(inputStream));
+            System.out.println("outputting output - loop");
+
+            int c = 0;
+
+            while((c = reader.read()) != -1) {
+                System.out.println("Reading process " + execName);
+                char character = (char) c;
+                System.out.println(character);
+                output += character;
+            }
+
+
+
+
+        }else{
+            output = "close314";
+        }
+        System.out.println("sending back response");
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(output);
+
+
+    }
+
+    private void testCodeInput(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String execName = request.getParameter("execName");
+        String argument = request.getParameter("argument");
+        String output = "";
+        if(codeTests.containsKey(execName)){
+            System.out.println("Process exists: "+execName);
+
+            Process process = codeTests.get(execName);
+            OutputStream outputStream = process.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+            writer.write(argument);
+
+        }
+        else{
+            output = "Process" +execName +" not found";
+        }
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(output);
+    }
+
+    private void testCodeOutput(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String execName = request.getParameter("execName");
+
+        String output ="";
+        if(codeTests.containsKey(execName)){
+
+            Process process = codeTests.get(execName);
+            InputStream inputStream = process.getInputStream();
+            BufferedReader reader = new BufferedReader (new InputStreamReader(inputStream));
+
+            String line1=null;
+            while ((line1 = reader.readLine()) != null) {
+                System.out.println("Reading process " + execName);
+                output += line1;
+            }
+        }
+        else{
+            output = "Process" +execName +" not found";
+        }
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(output);
+
+
+    }
+
+
+    private void testCodeRun(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+
+        String execName = request.getParameter("execName");
+
+        String processStatus = "";
+
+
+        if(codeTests.containsKey(execName)){
+            System.out.println("Process exists: "+execName);
+        }
+        else{
+            try {
+                ProcessBuilder pb=new ProcessBuilder();
+                pb = new ProcessBuilder("C:\\inz_code\\"+execName);
+
+
+
+                Process process = pb.start();
+                codeTests.put(execName,process);
+                System.out.println("Creating process: "+execName);
+                /*
+                OutputStream outputStream = process.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+                writer.flush();
+                */
+                processStatus = "created";
+
+
+            /*
+                process.destroy();// tell the process to stop
+                process.waitFor(10, TimeUnit.SECONDS); // give it a chance to stop
+                process.destroyForcibly();             // tell the OS to kill the process
+                process.waitFor();                     // the process is now dead
+*/
+
+
+            }
+            catch (Exception ex)
+
+            {
+                ex.printStackTrace();
+                processStatus = "failed";
+            }
+        }
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(processStatus);
+
+    }
+
+    private void testCodeCompile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println(request.toString());
+
+
+        String body = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+
+        try {
+            InputStream inputStream = request.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            } else {
+                stringBuilder.append("");
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ex) {
+                    throw ex;
+                }
+            }
+        }
+
+        String codeInput = htmlUnescape(stringBuilder.toString());
+
+        String codeOutput = "";
+
+
+        String testId = request.getParameter("testId");
+        String taskId = request.getParameter("taskId");
+
+
+        String fileName = "code" + "_" + testId +  "_" + taskId +  "_" +System.currentTimeMillis();
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\inz_code\\"+fileName + ".cpp"));
+        writer.write(codeInput);
+        writer.close();
+
+        Process compileProcess = null;
+        StringBuilder compileErrors = new StringBuilder("");
+        /*
+        File myObj = new File("C:\\inz_code\\output"+fileName+".exe");
+        if (myObj.createNewFile()) {
+            System.out.println("File created: " + myObj.getName());
+        } else {
+            System.out.println("File already exists.");
+        }
+*/
+        try {
+            ProcessBuilder pb;
+            pb = new ProcessBuilder("C:\\MinGW\\bin\\g++.exe","C:\\inz_code\\"+fileName+".cpp","-o","C:\\inz_code\\output"+fileName+".exe");
+
+            compileProcess = pb.start();
+            compileProcess.waitFor(5, TimeUnit.SECONDS);  // let the process run for 5 seconds
+
+
+            InputStream inputStream = compileProcess.getErrorStream();
+            BufferedReader reader = new BufferedReader (new InputStreamReader(inputStream));
+
+            String line1=null;
+            while ((line1 = reader.readLine()) != null) {
+                compileErrors.append(line1.substring(line1.indexOf(".cpp:") + 5));
+                compileErrors.append("\n");
+            }
+
+            System.out.print("Compile Errors: "+ compileErrors);
+
+            System.out.println( compileProcess.info().command());
+
+            compileProcess.destroy();// tell the process to stop
+            compileProcess.waitFor(10, TimeUnit.SECONDS); // give it a chance to stop
+            compileProcess.destroyForcibly();             // tell the OS to kill the process
+            compileProcess.waitFor();                     // the process is now dead
+
+        }
+        catch (Exception ex)
+
+        {
+
+            ex.printStackTrace();
+
+
+        }
+
+        if (!compileErrors.toString().equals("")){
+            codeOutput = compileErrors.toString();
+        }
+        else{
+            codeOutput = "output"+fileName+".exe";
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(codeOutput);
+
+    }
+
+        private void testCode(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NumberFormatException {
 
         TaskDao taskDao = new TaskDao();
 
@@ -205,11 +513,22 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         String testId = request.getParameter("testId");
         String taskId = request.getParameter("taskId");
-        int taskPos = Integer.parseInt(request.getParameter("taskPos"));
 
-        String fileName = "gradingcode" + "_" + testId +  "_" + taskId +  "_" +System.currentTimeMillis();
 
-        String codeInput = taskDao.getTaskById(Integer.valueOf(taskId)).getAnswer();
+        String fileName = "code" + "_" + testId +  "_" + taskId +  "_" +System.currentTimeMillis();
+        String codeInput  = "";
+        if(request.getParameter("answer") != null){
+            codeInput = request.getParameter("answer");
+            Task task = taskDao.getTaskById(Integer.valueOf(taskId));
+            task.setAnswer(codeInput);
+            taskDao.updateTask(task);
+
+
+        }
+        else{
+            codeInput = taskDao.getTaskById(Integer.valueOf(taskId)).getAnswer();
+        }
+
 
 
 
@@ -299,7 +618,18 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         }
 
         RequestDispatcher dispatcher = null;
-        dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTest&testId="+testId+"&taskPos="+taskPos+"&codeOutput="+codeOutput);
+
+        if(request.getParameter("target").equals("grading")){
+
+            int taskPos = Integer.parseInt(request.getParameter("taskPos"));
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=gradingTest&testId="+testId+"&taskPos="+taskPos+"&codeOutput="+codeOutput);
+        }
+        else{
+            int taskPos = Integer.parseInt(request.getParameter("taskPos"));
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&testId="+testId+"&taskPos="+taskPos+"&codeOutput="+codeOutput);
+        }
+
+
         dispatcher.forward(request, response);
 
 
@@ -471,19 +801,9 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         dispatcher.forward(request, response);
 
     }
-/*
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        System.out.println("Resource handlers added!");
-        registry
-                .addResourceHandler("/resources/**")
-                //.addResourceLocations("/static/")
-               // .addResourceLocations("/static/css/")
-                //.addResourceLocations("/static/bootstrap-4.0.0-dist/css/")
-                .addResourceLocations("/static/prism/");
-    }
 
-*/
+
+
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
@@ -862,7 +1182,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         }
         else{
-            dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&taskId=0&testId="+testID);
+            dispatcher = request.getRequestDispatcher("index.jsp?webpage=test&taskPos=0&testId="+testID);
 
         }
         dispatcher.forward(request, response);

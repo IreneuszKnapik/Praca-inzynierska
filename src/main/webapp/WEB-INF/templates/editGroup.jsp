@@ -61,7 +61,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 <h2 class="text-center">Edytuj grupę <%=group.getId()%></h2>
 <div>
     <form id="editGroupForm" method="post" enctype="multipart/form-data">
@@ -99,7 +99,7 @@
         </table>
 
         <div class="form-group">
-            <button onclick="saveGroup()" class="btn btn-block">Zapisz grupę</button>
+            <button onclick="saveGroup()" class="btn ">Zapisz grupę</button>
         </div>
     </form>
 

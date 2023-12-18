@@ -23,7 +23,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-<p>Zalogowany jako:<%=currentUser.getUsername() %></p>
+
 <h2 class="text-center">Dodaj nowego użytkownika</h2>
 <div>
     <form id="addUserForm" method="post" enctype="multipart/form-data">
@@ -52,7 +52,7 @@
         </div>
 
         <div class="form-group">
-            <button onclick="addUser()" class="btn btn-block">Dodaj użytkownika</button>
+            <button onclick="addUser()" class="btn ">Dodaj użytkownika</button>
         </div>
     </form>
 
