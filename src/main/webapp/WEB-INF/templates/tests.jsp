@@ -21,7 +21,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-
+<div style="width:90%" class="container align-items-center justify-content-center">
 
 <%if(testTemplates.isEmpty()){%>
 <h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>
@@ -48,6 +48,6 @@
 </table>
 
 <%}%>
-
+</div>
 </body>
 </html>

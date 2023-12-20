@@ -32,6 +32,11 @@
 <html>
 <head>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <style>
+        td > p {
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 <%if(groups.isEmpty()){%>
@@ -39,26 +44,23 @@
 <button  class="btn btn-success "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button>
 <%
 } else{ %>
-<button  class="btn btn-success "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button>
-<div class="container p-3">
-    <table id="groups" class="table table-active table-condensed">
-        <tr>
-            <th scope="col" >Id</th>
-            <th scope="col" >Nazwa grupy</th>
-            <th scope="col" >Opis grupy</th>
 
-        </tr>
-        <% for(int i=0;i<groups.size();i++) { %>
+<div style="width:90%" class="container align-items-center justify-content-center">
+
+    <table id="groups" class="table table-active word-break table-dark">
+        <thead>
+        <th scope="col" >Id grupy</th>
+        <th scope="col" >Nazwa grupy</th>
+        <th scope="col" >Opis grupy</th>
+        <th scope="col" ><button  class="btn btn-success "><a href="index.jsp?webpage=addGroup">Dodaj grupę</a></button></th>
+        </thead>
+        <tbody>
+        </tbody>
         <tr>
-            <td>
-                <%=groups.get(i).getId()%>
-            </td>
-            <td>
-                <%=groups.get(i).getName()%>
-            </td>
-            <td>
-                <%=groups.get(i).getDescription()%>
-            </td>
+            <% for(int i=0;i<groups.size();i++) { %>
+            <th scope="row"><p><%=groups.get(i).getId()%></p></th>
+            <td><p><%=groups.get(i).getName()%></p></td>
+            <td><p><%=groups.get(i).getDescription()%></p></td>
             <td>
                 <button class="btn btn-warning" ><a href="index.jsp?webpage=editGroup&groupId=<%=groups.get(i).getId()%>">Edytuj grupę</a></button>
             </td>
@@ -70,6 +72,12 @@
 
         <%}%>
     </table>
+
+                    </table>
+                </div>
+            </div>
+    </div>
+
 </div>
 
 

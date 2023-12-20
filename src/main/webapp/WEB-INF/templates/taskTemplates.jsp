@@ -42,7 +42,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
-
+<div style="width:90%" class="container align-items-center justify-content-center">
 
 
 <%if(taskTemplates.isEmpty()){%>
@@ -86,6 +86,6 @@
 </table>
 
 <%}%>
-
+<div>
 </body>
 </html>

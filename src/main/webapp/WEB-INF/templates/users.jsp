@@ -33,6 +33,7 @@
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
 </head>
 <body>
+<div style="width:90%" class="container align-items-center justify-content-center">
 <%if(users.isEmpty()){%>
 <h2 class="text-center">Żadni użytkownicy nie zostali pobrani z bazy</h2>
 <button  class="btn  "><a href="index.jsp?webpage=addUser">Dodaj użytkownika</a></button>
@@ -76,6 +77,6 @@
 </table>
 
 <%}%>
-
+</div>
 </body>
 </html>

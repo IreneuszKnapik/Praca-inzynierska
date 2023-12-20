@@ -37,12 +37,15 @@
         <div class="form-icon">
             <span><i class="icon icon-user"></i></span>
         </div>
+        <p class="h2">Opis zadania</p>
         <div class="form-group">
             <textarea placeholder="Opis zadania" name="description" class="h-100 w-100" form="addTaskForm" required="required"></textarea>
         </div>
+        <p class="h2">Odpowiedź</p>
         <div class="form-group">
             <textarea placeholder="Odpowiedź" name="answer" class="h-100 w-100" form="addTaskForm" required="required"></textarea>
         </div>
+        <p class="h2">Punkty za zadanie</p>
         <div class="form-group">
             <input type="number" class="form-control item" name="score" placeholder="Punkty za zadanie" required="required">
         </div>

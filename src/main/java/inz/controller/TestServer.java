@@ -116,9 +116,11 @@ public class TestServer extends WebSocketServer implements Runnable  {
 
                 if (!compileErrors.toString().equals("")){
                     compOutput = compileErrors.toString();
+                    conn.send(compOutput);
                     compilationFailed = true;
                 }
                 else{
+                    conn.send("Kompilacja powiodła się\n");
                     compOutput = "output"+fileName+".exe";
                 }
                 //conn.send("compilation result:" + compOutput);
@@ -144,7 +146,7 @@ public class TestServer extends WebSocketServer implements Runnable  {
                             outputHandler.start();
 
                             System.out.println("Creating process: "+execName);
-                            //conn.send(execName);
+                            conn.send("Twój program się uruchamia\n");
 
 
 
@@ -199,7 +201,7 @@ public class TestServer extends WebSocketServer implements Runnable  {
 
             }
             else{
-                conn.send("no process found for conn");
+                conn.send("Nie znaleziono procesu dla twojego rpogramu - spróbuj ponownie lub popraw kod\n");
 
 
             }

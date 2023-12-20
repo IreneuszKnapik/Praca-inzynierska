@@ -58,7 +58,7 @@
 
 
 <body>
-
+<div style="width:90%" class="container align-items-center justify-content-center">
 
 
 <p>Id testu:<%=testId%> </p>
@@ -153,7 +153,7 @@
     <%}%>
 
 <%}%>
-
+</div>
 </body>
 
 <script>

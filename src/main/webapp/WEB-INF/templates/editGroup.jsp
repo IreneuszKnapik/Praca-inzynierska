@@ -59,48 +59,43 @@
 <html>
 <head>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <style>
+        td > p {
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 
-<h2 class="text-center">Edytuj grupę <%=group.getId()%></h2>
-<div>
+<h2 class="text-center">Edytuj grupę:  <%=group.getId()%></h2>
+<div style="width:90%" class="container align-items-center justify-content-center">
     <form id="editGroupForm" method="post" enctype="multipart/form-data">
         <div class="form-icon">
             <span><i class="icon icon-user"></i></span>
         </div>
+        <p class="h2">Nazwa grupy</p>
         <div class="form-group">
             <input type="text" class="form-control item" form="editGroupForm" name="groupName" placeholder="Nazwa grupy" required="required" defaultValue="<%=group.getName()%>" value="<%=group.getName()%>">
         </div>
+        <p class="h2">Opis grupy</p>
         <div class="form-group">
             <input type="text" class="form-control item" form="editGroupForm" name="groupDescription"  placeholder="Opis grupy" required="required" defaultValue="<%=group.getDescription()%>" value="<%=group.getDescription()%>">
         </div>
-
-
-
-
-        <table>
-            <tr>
-                <th scope="col" class="text-center">Id</th>
-                <th scope="col" class="text-center">Użytkownik</th>
-            </tr>
+        <p class="h2" >Przypisanie użytkowników do grupy</p>
+        <div>
             <% for(int i=0;i<users.size();i++) { %>
-            <tr>
-                <td>
-                    <%=users.get(i).getId()%>
-                </td>
-                <td>
-                    <%=users.get(i).getUsername()%>
-                </td>
-                <td>
-                    <input class="form-control item" type="checkbox" name="enabledUser" onchange="updateUser(event,<%=users.get(i).getId()%>)" <% if (userIDs.contains(String.valueOf(users.get(i).getId()))) {%>checked<%}%>>
-                </td>
-            </tr>
+            <div class="checkbox-inline" style="border-right: 1px solid;padding-right:5px;margin-bottom:5px">
+                <input class="form-check-input " type="checkbox" name="enabledUser" id="checkbox<%=i%>>"onchange="updateUser(event,<%=users.get(i).getId()%>)" <% if (userIDs.contains(String.valueOf(users.get(i).getId()))) {%>checked<%}%>>
+                <label class="form-check-label" for="checkbox<%=i%>"><%=users.get(i).getUsername()%></label>
+            </div>
             <%}%>
-        </table>
 
-        <div class="form-group">
-            <button onclick="saveGroup()" class="btn ">Zapisz grupę</button>
         </div>
+    </br>
+        <button onclick="saveGroup()" class="btn btn-success">Zapisz grupę</button>
+
+
+
     </form>
 
 </div>

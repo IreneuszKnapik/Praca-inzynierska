@@ -24,8 +24,9 @@
 </head>
 <body>
 
-<h2 class="text-center">Dodaj nową grupę</h2>
-<div>
+
+<div style="width:90%" class="container align-items-center justify-content-center">
+    <h2 class="text-center">Dodaj nową grupę</h2>
     <form id="addGroupForm" method="post" enctype="multipart/form-data">
         <div class="form-icon">
             <span><i class="icon icon-user"></i></span>
