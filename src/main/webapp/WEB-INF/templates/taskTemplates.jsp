@@ -40,6 +40,11 @@
 <html>
 <head>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <style>
+        td > p {
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 <div style="width:90%" class="container align-items-center justify-content-center">
@@ -51,38 +56,31 @@
 
 <%
 } else{ %>
-<button  class="btn  "><a href="index.jsp?webpage=addTaskTemplate">Dodaj zadanie</a></button>
-<table id="groups" class="table table-active">
+<p class ="h1 text-center">Zarządzanie szablonami zadań</p>
+<table id="groups" class="table table-active word-break table-dark">
+    <thead>
     <tr>
         <th scope="col" class="text-center">Id</th>
         <th scope="col" class="text-center">Opis zadania</th>
-        <th scope="col" class="text-center">Poprawna odpowiedź</th>
+        <th scope="col" class="text-center">Dodatkowe parametry</th>
         <th scope="col" class="text-center">Punkty</th>
-
+        <th scope="col" class="text-center"><button  class="btn btn-success"><a href="index.jsp?webpage=addTaskTemplate">Dodaj zadanie</a></button></th>
     </tr>
+    </thead>
+    <tbody>
     <% for(int i=0;i<taskTemplates.size();i++) { %>
-        <tr>
-            <td>
-                <%=taskTemplates.get(i).getId()%>
-            </td>
-            <td>
-                <%=taskTemplates.get(i).getDescription()%>
-            </td>
-            <td>
-                <%=taskTemplates.get(i).getAnswer()%>
-            </td>
-            <td>
-                <%=taskTemplates.get(i).getScore()%>
-            </td>
-            <td>
-                <button class="btn  "><a href="index.jsp?webpage=editTaskTemplate&taskTemplateId=<%=taskTemplates.get(i).getId()%>">Edytuj zadanie</a></button>
-            </td>
-            <td>
-                <button class="btn " onclick="deleteTaskTemplate(<%=taskTemplates.get(i).getId()%>)"> Usuń zadanie</button>
-            </td>
-        </tr>
+    <tr>
+        <td class="text-center"><p><%=taskTemplates.get(i).getId()%></p></td>
+        <td class="text-center"><p><%=taskTemplates.get(i).getDescription()%></p></td>
+        <td class="text-center"><p><%=taskTemplates.get(i).getAnswer()%></p></td>
+        <td class="text-center"><p><%=taskTemplates.get(i).getScore()%></p></td>
+        <td class="text-center"><p><button class="btn btn-warning"><a href="index.jsp?webpage=editTaskTemplate&taskTemplateId=<%=taskTemplates.get(i).getId()%>">Edytuj zadanie</a></button></p></td>
+        <td class="text-center"><p><button class="btn btn-danger" onclick="deleteTaskTemplate(<%=taskTemplates.get(i).getId()%>)"> Usuń zadanie</button></p></td>
+    </tr>
 
-<%}%>
+    <%}%>
+    </tbody>
+
 </table>
 
 <%}%>

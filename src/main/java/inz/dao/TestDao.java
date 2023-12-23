@@ -430,6 +430,32 @@ public class TestDao {
 
     }
 
+    public List<Test> getGradedTestsByUser(Integer user_id) {
+        List<Test> tests = null;
+        Transaction transaction = null;
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()){
+
+            transaction = session.beginTransaction();
+
+            Query<Test> query= session.createQuery("FROM Test t WHERE t.user_id=:user_id AND t.grade != NULL");
+
+            //"from TestTemplate t WHERE t.id IN ( select testtemplate_id from user where g.user_id=:user_id ) AND allowed_attempts != 0");
+            query.setParameter("user_id",user_id);
+
+            tests = query.list();
+            Hibernate.initialize(tests);
+
+            transaction.commit();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return tests;
+    }
+
     public Test getTestById(Integer test_id) {
         Test test = null;
         Transaction transaction = null;

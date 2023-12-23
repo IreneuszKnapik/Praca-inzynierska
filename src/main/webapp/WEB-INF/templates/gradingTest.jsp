@@ -25,8 +25,6 @@
     String corrected_answer = "";
     int taskPos = 0;
     int score = 0;
-    String codeOutput = null;
-    codeOutput = request.getParameter("codeOutput");
     if(!tasks.isEmpty()){
         taskPos= Integer.parseInt(request.getParameter("taskPos"));
         System.out.print("taskId " + taskPos +" \n");
@@ -54,14 +52,12 @@
     <style><%@include file="/static/prism/prism.css"%></style>
     <style><%@include file="/static/css/test.css"%></style>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+
 </head>
 
 
 <body>
 <div style="width:90%" class="container align-items-center justify-content-center">
-
-
-<p>Id testu:<%=testId%> </p>
 
 <%if(tasks.isEmpty()){%>
 <h2 class="text-center">W teście nie zajdują się żadne zadania</h2>
@@ -76,9 +72,23 @@
     <div>
 
         <div class="testNav">
-            <% for(int i=0;i<tasks.size();i++) { %>
-                <button style="display:inline-block;margin:5px;width:50px;height:50px"  class="btn" onclick="setTaskPos(<%=i%>);saveGrading()"><%=i+1%></button>
-            <%}%>
+            <p class="h2">Nawigacja</p>
+            <p>Odpowiedzi zapisują się automatycznie przy przechodzeniu między zadaniami</p>
+            <% for(int i=0;i<tasks.size();i++) {
+                if(i == taskPos){
+            %>
+            <button style="display:inline-block; ;width:50px;height:50px"  class="btn btn-info active" onclick="setTaskPos(<%=i%>);saveGrading()"><%=i+1%></button>
+            <%
+            }
+            else{
+
+            %>
+            <button style="display:inline-block; ;width:50px;height:50px"  class="btn" onclick="setTaskPos(<%=i%>);saveGrading()"><%=i+1%></button>
+
+            <%
+                    }
+                }%>
+
         </div>
 
         <form id="testForm" action="index?action=gradeTask&taskId=<%=task.getId()%>&targetTest=<%=testId%>&targetTask=0" method="post" enctype="multipart/form-data">
@@ -105,31 +115,47 @@
 
             </table>
             <div>
-                <p>Odpowiedź z testu</p>
-                    <pre id="highlightingOriginal">
-                        <code id="highlighting-content-originalAnswer" readonly class="language-cpp h-100 w-100" ></code>
+                <p class="h2">Odpowiedź z testu</p>
+                    <pre id="highlightingOriginal" class="PrismElement">
+                        <code id="highlighting-content-originalAnswer" readonly class="language-cpp h-100 w-100 PrismElement" ></code>
                         </pre>
-                <textarea id="originalAnswer" spellcheck="false" aria-hidden="true" hidden><%=answer%></textarea>
-                <button style="display:inline-block;margin:5px" onclick="testCode()" class="btn">Testuj kod</button>
+                <textarea id="originalAnswer"  class="PrismElement" spellcheck="false" aria-hidden="true" hidden><%=answer%></textarea>
+                <button style="display:inline-block; " onclick="testCodeSocket()" class="btn btn-success">Testuj kod</button>
 
             </div>
-            <% if(codeOutput != null){ %>
-            <p>Wynik testowania kodu:</p>
-            <textarea  class="h-100 w-100" ><%=codeOutput%></textarea>
-            <% } %>
-            <p>Poprawiona odpowiedź, komentarze oceniającego</p>
+        </br>
+            <div id="testingInterface" hidden="true">
+                <div class="container justify-content-center">
+
+                    <p id="asyncCodeTestCompile" class="h2">Wynik kompilacji kodu</p>
+                    <textarea readonly  style="resize:none;min-height:100px" class="w-100 form-control" id="testOutput"></textarea>
+                    </br>
+
+                    <p class="container justify-content-center" class="h3" >Wprowadzanie zmiennych na wejście programu</p>
+                    <textarea  class="h-100 w-100 form-control" id="testInput"></textarea>
+                </div>
+                </br>
+                <div class="container w-25">
+                    <button type="button" id="sendInput" class="btn btn-warning" style="color:black" onclick="sendInputToTest()" >Wyślij dane wejściowe do programu</button>
+                </div>
+                </br>
+            </div>
+            <p class="h2">Poprawiona odpowiedź, komentarze oceniającego</p>
             <div id="answerEditor">
-                <pre id="highlighting" aria-hidden="true">
-                    <code id="highlighting-content" class="language-cpp h-100 w-100" ><%=corrected_answer%></code>
+                <pre id="highlighting"  class="PrismElement" aria-hidden="true">
+                    <code id="highlighting-content" class="language-cpp PrismElement h-100 w-100" ><%=corrected_answer%></code>
                 </pre>
-                <textarea id="editing" name="correctedAnswer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm"><%=corrected_answer%></textarea>
+                <textarea id="editing" class="PrismElement" name="correctedAnswer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm"><%=corrected_answer%></textarea>
             </div>
-            <p>Ilość zdobytych punktów</p>
+
             <div>
-                <input type="number" class="form-control item" name="score" form="testForm" required="required" min="0" max="<%=task.getScore()%>" defaultValue="<%=score%>" value="<%=score%>">
-                <button style="display:inline-block;margin:5px" onclick="setTaskPos(<%=taskPos%>);saveGrading()" form ="testForm" class="btn">Zapisz</button>
+                <p class="h2">Ilość zdobytych punktów</p>
+                <input style="width:100px" type="number" class="form-control item" name="score" form="testForm" required="required" min="0" max="<%=task.getScore()%>" defaultValue="<%=score%>" value="<%=score%>">
+                </br>
+                <button style="display:inline-block; " onclick="setTaskPos(<%=taskPos%>);saveGrading()" form ="testForm" class="btn btn-warning">Zapisz punktację za zadanie</button>
             </div>
-            <p>Ilość zdobytych punktów ze wszsystkich zadań</p>
+
+            <p class="h2">Ilość zdobytych punktów ze wszsystkich zadań:
             <%
                 int currSum = 0;
                 int totalSum = 0;
@@ -137,14 +163,14 @@
                         currSum += tasks.get(i).getGraded();
                         totalSum += tasks.get(i).getScore();
                 }
-            %>
-            <%=currSum%>/<%=totalSum%>
-
-            <p>Ocena za cały test</p>
+            %><%=currSum%>/<%=totalSum%></p>
             <div>
-                <input type="number" class="form-control item" name="gradeTest" min="1" max="6" defaultValue="" value="0">
-                <button style="display:inline-block;margin:5px" onclick="markTest()" class="btn">Wystaw ocenę za cały test</button>
+                <p class="h2">Ocena za cały test</p>
+                <input type="number" class="form-control item" name="gradeTest" style="width:100px" min="1" max="6" defaultValue="" value="0">
+            </br>
+            <button style="display:inline-block; " onclick="markTest()" class="btn btn-danger">Wystaw ocenę za cały test</button>
             </div>
+
 
         </form>
     </div>
@@ -159,6 +185,8 @@
 <script>
 
     let taskPos;
+    let ws;
+    let newLineWatchdog;
 
     window.onload = function (){
         setTaskPos(0);
@@ -180,8 +208,80 @@
 
     }
 
+    function setNewLineWatchdog(arg){
+        this.newLineWatchdog = arg;
+    }
+    function getNewLineWatchdog(){
+        return this.newLineWatchdog;
+    }
+
+    function getWebSocket(){
+        return this.ws;
+    }
+    function setWebSocket(ws){
+        this.ws = ws;
+    }
+
+    function testCodeSocket() {
+        if ("WebSocket" in window) {
+
+            document.querySelector("#testingInterface").removeAttribute("hidden");
+            document.querySelector("#testOutput").innerHTML = "";
+            // Let us open a web socket
+
+            let ws = new WebSocket("ws://localhost:5057/socket");
+            setWebSocket(ws)
+
+            ws.onopen = function () {
+
+
+                // Web Socket is connected, send data using send()
+
+                let inputCode = document.querySelector("#originalAnswer").innerHTML;
+                console.log(inputCode);
+
+                console.log("sending header request");
+                ws.send("action=testCodeCompile&testId=<%=testId%>&taskId=<%=task.getId()%>&"+inputCode);
+
+
+            }
+            ws.onmessage = function (evt) {
+
+                let received_msg = evt.data;
+                document.querySelector("#testOutput").innerHTML +=received_msg;
+                document.querySelector("#testOutput").focus();
+                console.log("Message is received...: "+ received_msg);
+                setNewLineWatchdog(true)
+            };
+            ws.onclose = function () {
+
+                // websocket is closed.
+                console.log("Connection is closed...");
+            };
+        }
+
+    }
+
+    function sendInputToTest(){
+        let testInput = document.querySelector("#testInput");
+        console.log(testInput.value);
+        if(getWebSocket() != null){
+            getWebSocket().send(testInput.value);
+            document.querySelector("#testOutput").innerHTML
+            if(getNewLineWatchdog()){
+                document.querySelector("#testOutput").innerHTML += "\n"
+            }
+            document.querySelector("#testOutput").innerHTML += ">" + testInput.value +"\n";
+            setNewLineWatchdog(false);
+            testInput.value ="";
+        }
+    }
+
     function setTaskPos(id){
         this.taskPos = id;
+    }
+    function getTaskPos(){
+        return this.taskPos;
     }
 
     function cleanMarkdown(text){
@@ -197,12 +297,6 @@
 
     function markTest () {
         let baseUrl = "index?action=markTest&testId=<%=testId%>";
-        let form = document.getElementById("testForm");
-        form.action = baseUrl;
-        form.submit();
-    }
-    function testCode () {
-        let baseUrl = "index?action=testCode&taskPos="+this.taskPos+ "&testId=<%=testId%>&taskId=<%=task.getId()%>&target=grading";
         let form = document.getElementById("testForm");
         form.action = baseUrl;
         form.submit();

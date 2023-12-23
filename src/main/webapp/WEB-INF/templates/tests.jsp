@@ -19,6 +19,11 @@
 <html>
 <head>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <style>
+        td > p {
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 <div style="width:90%" class="container align-items-center justify-content-center">
@@ -27,22 +32,23 @@
 <h2 class="text-center">Użytkownik nie ma udostępnionych żadnych testów</h2>
 <%
 } else{ %>
-
-<table id="groups" class="table table-active">
+<p class="h1 text-center">Dostepne testy</p>
+<table id="groups" class="table table-active word-break table-dark">
+    <thead>
     <tr>
         <th scope="col" class="text-center">Id</th>
         <th scope="col" class="text-center">Nazwa testu</th>
     </tr>
+    </thead>
+    <tbody>
     <% for(int i=0;i<testTemplates.size();i++) { %>
-        <tr>
-            <td>
-                <%=testTemplates.get(i).getId()%>
-            </td>
-            <td>
-                <a href="index?&action=openTest&testTemplateId=<%=testTemplates.get(i).getId()%>"><%=testTemplates.get(i).getName()%></a>
-            </td>
+    <tr>
+        <td><p class="text-center"><%=testTemplates.get(i).getId()%></p></td>
+        <td><p class="text-center"><%=testTemplates.get(i).getName()%></p></td>
+        <td><button  class="btn btn-info"><a href="index?&action=openTest&testTemplateId=<%=testTemplates.get(i).getId()%>">Otwórz test</a></button></td>
+    </tr>
+    </tbody>
 
-        </tr>
 
 <%}%>
 </table>

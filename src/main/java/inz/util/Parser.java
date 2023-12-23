@@ -69,6 +69,7 @@ public class Parser {
                 "addTaskTemplate;" +
                 "editTaskTemplate;" +
                 "test;" +
+                "viewTest;" +
                 "tests;" +
                 "testTemplates;" +
                 "addTestTemplate;" +

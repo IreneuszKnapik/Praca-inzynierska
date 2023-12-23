@@ -47,17 +47,24 @@
             <span><i class="icon icon-user"></i></span>
         </div>
         <div class="form-group">
-            <textarea placeholder="Opis zadania" name="description" class="h-100 w-100" form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getDescription()%>" ><%=taskTemplate.getDescription()%></textarea>
+            <p class="h2">Opis zadania</p>
+            <textarea placeholder="Opis zadania" name="description" class="h-100 w-100 form-control " form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getDescription()%>" ><%=taskTemplate.getDescription()%></textarea>
         </div>
         <div class="form-group">
-            <textarea placeholder="Odpowiedź" name="answer" class="h-100 w-100" form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getAnswer()%>" ><%=taskTemplate.getAnswer()%></textarea>
-        </div>
-        <div class="form-group">
-            <input type="number" class="form-control item" name="score" form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getScore()%>" value="<%=taskTemplate.getScore()%>">
-        </div>
+            <p class="h2">Dodatkowe parametry</p>
+            <textarea placeholder="
+int main() {
 
+return 0;
+}" name="answer" class="h-100 w-100 form-control" form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getAnswer()%>" ><%=taskTemplate.getAnswer()%></textarea>
+        </div>
+        <div class="form-group" >
+            <p class="h2">Punkty za zadanie</p>
+            <input style="width:100px" type="number" class="form-control item" name="score" form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getScore()%>" value="<%=taskTemplate.getScore()%>">
+        </div>
+    </br>
         <div class="form-group">
-            <button onclick="saveTaskTemplate()" class="btn ">Zapisz zmiany</button>
+            <button onclick="saveTaskTemplate()" class="btn btn-success">Zapisz zmiany</button>
         </div>
     </form>
 

@@ -40,20 +40,20 @@
         <div class="form-group">
             <input type="text" class="form-control item" name="email" placeholder="Adres email" required="required">
         </div>
-        <p>Uprawnienia użytkownika</p>
+        <p class="h2">Uprawnienia użytkownika</p>
         <div class="form-group">
             <input type="radio" id="type0" name="type" value="0">
-            <label for="type0">Typ 0 - zablokowany użytkownik</label>
+            <label for="type0">Typ 0 - zablokowany użytkownik</label><br>
             <input type="radio" id="type1" name="type" value="1">
-            <label for="type1">Typ 1 - zwykły użytkownik - rozwiązuje testy</label>
+            <label for="type1">Typ 1 - zwykły użytkownik - rozwiązuje testy</label><br>
             <input type="radio" id="type2" name="type" value="2">
-            <label for="type1">Typ 2 - twórca testów - tworzy i ocenia testy</label>
+            <label for="type1">Typ 2 - twórca testów - tworzy i ocenia testy</label><br>
             <input type="radio" id="type3" name="type" value="3">
-            <label for="type3">Typ 3 - administrator - ma dostęp do wszystkiego</label>
+            <label for="type3">Typ 3 - administrator - ma dostęp do wszystkiego</label><br>
         </div>
 
         <div class="form-group">
-            <button onclick="addUser()" class="btn ">Dodaj użytkownika</button>
+            <button onclick="addUser()" class="btn btn-success">Dodaj użytkownika</button>
         </div>
     </form>
 

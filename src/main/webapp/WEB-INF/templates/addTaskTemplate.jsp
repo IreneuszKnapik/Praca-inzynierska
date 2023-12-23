@@ -31,7 +31,7 @@
 </head>
 <body>
 
-<h2 class="text-center">Dodaj nowy test do bazy</h2>
+<h2 class="text-center">Dodaj nowe zadanie do bazy</h2>
 <div>
     <form id="addTaskForm" method="post" enctype="multipart/form-data">
         <div class="form-icon">
@@ -39,19 +39,19 @@
         </div>
         <p class="h2">Opis zadania</p>
         <div class="form-group">
-            <textarea placeholder="Opis zadania" name="description" class="h-100 w-100" form="addTaskForm" required="required"></textarea>
+            <textarea placeholder="Opis zadania" name="description" class="h-100 w-100 form-control" form="addTaskForm" required="required"></textarea>
         </div>
         <p class="h2">Odpowiedź</p>
         <div class="form-group">
-            <textarea placeholder="Odpowiedź" name="answer" class="h-100 w-100" form="addTaskForm" required="required"></textarea>
+            <textarea placeholder="Odpowiedź" name="answer" class="h-100 w-100 form-control" form="addTaskForm" required="required"></textarea>
         </div>
         <p class="h2">Punkty za zadanie</p>
-        <div class="form-group">
+        <div class="form-group container w-25">
             <input type="number" class="form-control item" name="score" placeholder="Punkty za zadanie" required="required">
         </div>
 
         <div class="form-group">
-            <button onclick="saveTaskTemplate()" class="btn ">Dodaj test</button>
+            <button onclick="saveTaskTemplate()" class="btn ">Dodaj zadanie</button>
         </div>
     </form>
 

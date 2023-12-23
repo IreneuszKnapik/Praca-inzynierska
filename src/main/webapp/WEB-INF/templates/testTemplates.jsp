@@ -37,6 +37,11 @@
 <html>
 <head>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <style>
+        td > p {
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 <div style="width:90%" class="container align-items-center justify-content-center">
@@ -48,33 +53,29 @@
 
 <%
 } else{ %>
-<button  class="btn  "><a href="index.jsp?webpage=addTestTemplate">Dodaj test</a></button>
-<table id="groups" class="table table-active">
+
+<p class ="h1 text-center">Zarządzanie szablonami testów</p>
+<table id="groups" class="table table-active word-break table-dark">
+    <thead>
     <tr>
         <th scope="col" class="text-center">Id</th>
         <th scope="col" class="text-center">Nazwa szablonu testu</th>
         <th scope="col" class="text-center">Opis testu</th>
+        <th scope="col" class="text-center"><button  class="btn btn-success"><a href="index.jsp?webpage=addTestTemplate">Dodaj test</a></button></th>
     </tr>
+    </thead>
+    <tbody>
     <% for(int i=0;i<testTemplates.size();i++) { %>
         <tr>
-            <td>
-                <%=testTemplates.get(i).getId()%>
-            </td>
-            <td>
-                <%=testTemplates.get(i).getName()%>
-            </td>
-            <td>
-                <%=testTemplates.get(i).getDescription()%>
-            </td>
-            <td>
-                <button class="btn  "><a href="index.jsp?webpage=editTestTemplate&testTemplateId=<%=testTemplates.get(i).getId()%>">Edytuj test</a></button>
-            </td>
-            <td>
-                <button class="btn " onclick="deleteTest(<%=testTemplates.get(i).getId()%>)"> Usuń test</button>
-            </td>
+            <td  class="text-center"><p><%=testTemplates.get(i).getId()%></p></td>
+            <td  class="text-center"><p><%=testTemplates.get(i).getName()%></p></td>
+            <td  class="text-center"><p><%=testTemplates.get(i).getDescription()%></p></td>
+            <td  class="text-center"><p><button class="btn btn-warning"><a href="index.jsp?webpage=editTestTemplate&testTemplateId=<%=testTemplates.get(i).getId()%>">Edytuj test</a></button></p></td>
+            <td  class="text-center"><p><button class="btn btn-danger" onclick="deleteTest(<%=testTemplates.get(i).getId()%>)"> Usuń test</button></p></td>
         </tr>
 
 <%}%>
+    </tbody>
 </table>
 
 <%}%>

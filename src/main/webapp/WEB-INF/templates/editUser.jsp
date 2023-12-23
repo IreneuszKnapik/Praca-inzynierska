@@ -59,7 +59,7 @@
         <div class="form-group">
             <input type="text" class="form-control item" name="email" placeholder="Adres email" required="required" defaultValue="<%=user.getEmail()%>" value="<%=user.getEmail()%>">
         </div>
-        <p>Uprawnienia użytkownika</p>
+        <p class="h2">Uprawnienia użytkownika</p>
         <div class="form-group">
             <input type="radio" id="type0" name="type" value="0">
             <label for="type0">Typ 0 - zablokowany użytkownik</label><br>

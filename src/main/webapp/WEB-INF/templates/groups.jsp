@@ -46,9 +46,9 @@
 } else{ %>
 
 <div style="width:90%" class="container align-items-center justify-content-center">
-
+    <p class ="h1 text-center">Zarządzanie grupami</p>
     <table id="groups" class="table table-active word-break table-dark">
-        <thead>
+        <thead class="thead-dark">
         <th scope="col" >Id grupy</th>
         <th scope="col" >Nazwa grupy</th>
         <th scope="col" >Opis grupy</th>

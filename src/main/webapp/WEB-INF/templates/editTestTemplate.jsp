@@ -114,6 +114,7 @@
         <div class="form-group">
             <input type="number" class="form-control item"  name="allowed_attempts" placeholder="Ilośc mozliwych podejść" required="required" defaultValue="<%=testTemplate.getAllowed_attempts()%>" value="<%=testTemplate.getAllowed_attempts()%>">
         </div>
+        <p class="h2">Przydzielanie zadań do testu</p>
         <table class="table table-active word-break table-dark">
             <thead class="thead-dark">
             <tr>
@@ -151,6 +152,7 @@
             </tbody>
         </table>
     </br>
+        <p class="h2">Udostępnianie testu grupom</p>
         <table class="table table-active word-break">
             <thead class="thead-dark">
             <tr>
