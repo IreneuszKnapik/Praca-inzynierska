@@ -38,12 +38,12 @@ public class TaskTemplate {
         this.description = description;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getTaskCodeBody() {
+        return taskCodeBody;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setTaskCodeBody(String taskCodeBody) {
+        this.taskCodeBody = taskCodeBody;
     }
 
     @Id
@@ -56,8 +56,8 @@ public class TaskTemplate {
     @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "answer",columnDefinition = "TEXT")
-    private String answer;
+    @Column(name = "taskCodeBody",columnDefinition = "TEXT")
+    private String taskCodeBody;
 
     public Set<TestTemplate> getTestTemplates() {
         return testTemplates;
@@ -88,7 +88,7 @@ public class TaskTemplate {
                 "id=" + id +
                 ", score=" + score +
                 ", description='" + description + '\'' +
-                ", answer='" + answer + '\'' +
+                ", answer='" + taskCodeBody + '\'' +
                 ", testTemplates=" + testTemplates.size() +
                 '}';
     }

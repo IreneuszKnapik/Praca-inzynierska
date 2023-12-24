@@ -13,7 +13,9 @@
 </head>
 
 <body>
-<p><%=request.getParameter("errors")%></p>
+<div class = "w-75 container justify-content-center">
+<p class ="h2"><%=request.getParameter("errors")%></p>
 
-<button class="btn "><a href="index.jsp?webpage=<%= request.getParameter("targetPage") %>">Powrót</a></button>
+<button class="btn btn-success"><a href="index.jsp?webpage=<%= request.getParameter("targetPage") %>">Powrót</a></button>
+</div>
 </body>

@@ -136,7 +136,7 @@
                 </td>
                 <td>
                     <p class="text-center">
-                    <%=tasks.get(i).getAnswer()%>
+                    <%=tasks.get(i).getTaskCodeBody()%>
                     </p>
                 </td>
                 <td>

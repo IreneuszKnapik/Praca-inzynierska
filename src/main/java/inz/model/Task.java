@@ -55,6 +55,27 @@ public class Task {
     @Column(name = "answer",columnDefinition = "TEXT")
     private String answer;
 
+    public String getTaskCodeBody() {
+        return taskCodeBody;
+    }
+
+    public void setTaskCodeBody(String taskCodeBody) {
+        this.taskCodeBody = taskCodeBody;
+    }
+
+    public String getTaskCodeHeader() {
+        return taskCodeHeader;
+    }
+
+    public void setTaskCodeHeader(String taskCodeHeader) {
+        this.taskCodeHeader = taskCodeHeader;
+    }
+
+    @Column(name = "taskCodeBody",columnDefinition = "TEXT")
+    private String taskCodeBody;
+    @Column(name = "taskCodeHeader",columnDefinition = "TEXT")
+    private String taskCodeHeader;
+
     public String getCorrected_answer() {
         return corrected_answer;
     }

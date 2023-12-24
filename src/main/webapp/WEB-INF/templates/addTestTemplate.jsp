@@ -92,7 +92,7 @@
                     <%=tasks.get(i).getDescription()%>
                 </td>
                 <td>
-                    <%=tasks.get(i).getAnswer()%>
+                    <%=tasks.get(i).getTaskCodeBody()%>
                 </td>
                 <td>
                     <%=tasks.get(i).getScore()%>

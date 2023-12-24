@@ -723,6 +723,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
 
         Task task = taskDao.getTaskById(Integer.parseInt(request.getParameter("taskId")));
         task.setAnswer(request.getParameter("answer"));
+        task.setTaskCodeHeader(request.getParameter("answerHeader"));
 
 
         String targetTask = request.getParameter("targetTask");
@@ -797,7 +798,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
         TaskTemplate taskTemplate = new TaskTemplate();
 
-        taskTemplate.setAnswer((request.getParameter("answer")));
+        taskTemplate.setTaskCodeBody((request.getParameter("answer")));
         taskTemplate.setDescription((request.getParameter("description")));
         taskTemplate.setScore(Integer.parseInt(request.getParameter("score")));
 
@@ -817,7 +818,7 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
         TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
         TaskTemplate taskTemplate = taskTemplateDao.getTaskTemplateById(Integer.parseInt(request.getParameter("taskTemplateID")));
 
-        taskTemplate.setAnswer(request.getParameter("answer"));
+        taskTemplate.setTaskCodeBody(request.getParameter("taskCodeBody"));
         taskTemplate.setDescription(request.getParameter("description"));
         taskTemplate.setScore(Integer.parseInt(request.getParameter("score")));
 

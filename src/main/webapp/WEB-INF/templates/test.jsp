@@ -34,6 +34,15 @@
     answer = task.getAnswer();
     System.out.print("answer " + answer + "/n");
 
+    String codeBody;
+    codeBody = task.getTaskCodeBody();
+
+    System.out.print("codeBody  " + codeBody  + "/n");
+
+    String codeHeader;
+    codeHeader = task.getTaskCodeHeader();
+
+    System.out.print("codeHeader  " + codeHeader  + "/n");
 
 %>
 
@@ -97,14 +106,14 @@
                 <pre id="header_highlighting" style="width:100%" aria-hidden="true">
                     <code id="header_highlightingContent" class="language-cpp" ></code>
                 </pre>
-                <textarea id="header_editing" name="answer" style="width:100%" spellcheck="false" oninput="updateAnswer(this.value,'header_editing','header_highlightingContent');sync_scroll(this,'header_highlighting');" onscroll="sync_scroll(this,'header_highlighting')" onkeydown="check_tab(this, event);" form="testForm"><%=answer%></textarea>
+                <textarea id="header_editing" name="answerHeader" style="width:100%" spellcheck="false" oninput="updateAnswer(this.value,'header_editing','header_highlightingContent');sync_scroll(this,'header_highlighting');" onscroll="sync_scroll(this,'header_highlighting')" onkeydown="check_tab(this, event);" form="testForm"><%=codeHeader%></textarea>
             </div>
             <p class="h2"> Kod podany przez twórcę zadania</p>
             <div id="answerBody" style="width:100%">
                 <pre id="body_highlighting" style="width:100%" aria-hidden="true">
                     <code id="body_highlightingContent" class="language-cpp" ></code>
                 </pre>
-                <textarea hidden id="answerBodyContents"><%=answer%></textarea>
+                <textarea hidden id="answerBodyContents"><%=codeBody%></textarea>
             </div>
             <p class="h2"> Miejsce na twój kod</p>
             <div id="answerEditor" style="width:100%">
@@ -221,7 +230,7 @@
 
                 // Web Socket is connected, send data using send()
 
-                let inputCode = document.querySelector("#editing").innerHTML;
+                let inputCode = document.querySelector("#header_editing").innerHTML + "\n" + document.querySelector("#answerBodyContents").innerHTML + "\n" + document.querySelector("#editing").innerHTML;
                 console.log(inputCode);
 
                 console.log("sending header request");

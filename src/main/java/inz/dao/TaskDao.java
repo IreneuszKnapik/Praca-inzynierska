@@ -407,11 +407,14 @@ public class TaskDao {
         System.out.println("taskTemplates.size()" + taskTemplates.size());
         for (int i = 0; i < taskTemplates.size(); i++){
             Task newTask = new Task();
-            newTask.setAnswer(taskTemplates.get(i).getAnswer());
             newTask.setDescription(taskTemplates.get(i).getDescription());
+            newTask.setTaskCodeBody(taskTemplates.get(i).getTaskCodeBody());
             newTask.setScore(taskTemplates.get(i).getScore());
             newTask.setUser_id(user_id);
             newTask.setTest_id(test_id);
+            newTask.setTaskCodeHeader("");
+            newTask.setAnswer("");
+            newTask.setCorrected_answer("");
             saveTask(newTask);
         }
 

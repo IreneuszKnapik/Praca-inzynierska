@@ -142,14 +142,11 @@ public class TestServer extends WebSocketServer implements Runnable  {
 
                             Process process = pb.start();
                             codeTests.put(conn,process);
-                            ioHandler outputHandler = new ioHandler(process.getInputStream(),conn);
+                            ioHandler outputHandler = new ioHandler(process.getInputStream(),conn,process);
                             outputHandler.start();
 
+
                             System.out.println("Creating process: "+execName);
-                            conn.send("Twój program się uruchamia\n");
-
-
-
 
 
                         }
@@ -176,10 +173,11 @@ public class TestServer extends WebSocketServer implements Runnable  {
                 OutputStream outputStream = process.getOutputStream();
                 PrintWriter writer = new PrintWriter(outputStream);
 
-                System.out.println("writer writes 2");
+                System.out.println("writer writes "+message);
                 writer.printf("%s\n",message);
                 writer.flush();
-                System.out.println("writer wrote 2");
+                System.out.println("writer wrote "+ message);
+                System.out.println("process.exitValue(): " + process.exitValue());
                 /*
                 int exitValue;
                 try {
@@ -201,7 +199,7 @@ public class TestServer extends WebSocketServer implements Runnable  {
 
             }
             else{
-                conn.send("Nie znaleziono procesu dla twojego rpogramu - spróbuj ponownie lub popraw kod\n");
+                conn.send("Nie znaleziono procesu dla twojego programu - spróbuj ponownie lub popraw kod\n");
 
 
             }

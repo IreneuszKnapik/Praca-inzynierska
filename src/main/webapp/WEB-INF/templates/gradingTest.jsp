@@ -1,4 +1,4 @@
-<%@ page import="inz.dao.GroupDao" %>
+        <%@ page import="inz.dao.GroupDao" %>
 <%@ page import="inz.model.Group" %>
 
 <%@ page import="java.util.List" %>
@@ -8,6 +8,7 @@
 <%@ page import="inz.dao.TaskDao" %>
 <%@ page import="inz.model.TaskGroup" %>
 <%@ page import="inz.model.Task" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:useBean id="currentUser" class="inz.model.User" scope="session"/>
 
@@ -25,21 +26,64 @@
     String corrected_answer = "";
     int taskPos = 0;
     int score = 0;
-    if(!tasks.isEmpty()){
-        taskPos= Integer.parseInt(request.getParameter("taskPos"));
-        System.out.print("taskId " + taskPos +" \n");
 
+    ArrayList<String> testCasesInputs = null;
+    ArrayList<String> testCasesOutputs = null;
+    if (!tasks.isEmpty()) {
+        taskPos = Integer.parseInt(request.getParameter("taskPos"));
+        System.out.print("taskId " + taskPos + " \n");
 
 
         task = tasks.get(taskPos);
+        answer = task.getTaskCodeHeader() + "\n";
+        answer += task.getTaskCodeBody() + "\n";
+        answer += task.getAnswer();
 
-        answer = task.getAnswer();
         corrected_answer = task.getCorrected_answer();
 
 
         score = task.getGraded();
         System.out.print("answer " + answer + "/n");
         System.out.print("corrected_answer " + corrected_answer + "/n");
+
+        testCasesInputs = new ArrayList<>();
+        testCasesOutputs = new ArrayList<>();
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
+        testCasesInputs.add("2 2");
+        testCasesOutputs.add("4");
+        testCasesInputs.add("3 3");
+        testCasesOutputs.add("6");
     }
 
 
@@ -51,7 +95,7 @@
 <head>
     <style><%@include file="/static/prism/prism.css"%></style>
     <style><%@include file="/static/css/test.css"%></style>
-    <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <title><%=currentUser.getUsername()%> - C++ testing portal</title>
 
 </head>
 
@@ -59,31 +103,32 @@
 <body>
 <div style="width:90%" class="container align-items-center justify-content-center">
 
-<%if(tasks.isEmpty()){%>
+<%if (tasks.isEmpty()) {%>
 <h2 class="text-center">W teście nie zajdują się żadne zadania</h2>
 <%
-} else{ %>
+} else { %>
 
-    <% if(task == null){%>
+    <% if (task == null) {%>
     <h2 class="text-center">W teście nie znajdują się żadne zadania</h2>
     <%
-    } else{ %>
+    } else { %>
 
     <div>
 
         <div class="testNav">
             <p class="h2">Nawigacja</p>
             <p>Odpowiedzi zapisują się automatycznie przy przechodzeniu między zadaniami</p>
-            <% for(int i=0;i<tasks.size();i++) {
-                if(i == taskPos){
+            <% for (int i = 0; i < tasks.size(); i++) {
+                if (i == taskPos) {
             %>
-            <button style="display:inline-block; ;width:50px;height:50px"  class="btn btn-info active" onclick="setTaskPos(<%=i%>);saveGrading()"><%=i+1%></button>
+            <button style="display:inline-block; ;width:50px;height:50px"  class="btn btn-info active" onclick="setTaskPos(
+                <%=i%>);saveGrading()"><%=i + 1%></button>
             <%
-            }
-            else{
+            } else {
 
             %>
-            <button style="display:inline-block; ;width:50px;height:50px"  class="btn" onclick="setTaskPos(<%=i%>);saveGrading()"><%=i+1%></button>
+            <button style="display:inline-block; ;width:50px;height:50px"  class="btn" onclick="setTaskPos(<%=i%>
+                    );saveGrading()"><%=i + 1%></button>
 
             <%
                     }
@@ -119,8 +164,10 @@
                     <pre id="highlightingOriginal" class="PrismElement">
                         <code id="highlighting-content-originalAnswer" readonly class="language-cpp h-100 w-100 PrismElement" ></code>
                         </pre>
-                <textarea id="originalAnswer"  class="PrismElement" spellcheck="false" aria-hidden="true" hidden><%=answer%></textarea>
-                <button style="display:inline-block; " onclick="testCodeSocket()" class="btn btn-success">Testuj kod</button>
+                <textarea id="originalAnswer"  class="PrismElement" spellcheck="false" aria-hidden="true" hidden>
+                    <%=answer%></textarea>
+                <button style="display:inline-block; " onclick="testCodeSocket()" class="btn btn-success">Testuj kod manualnie</button>
+                <button style="display:inline-block; " onclick="testCodeAuto()" class="btn btn-info">Testuj kod automatycznie</button>
 
             </div>
         </br>
@@ -140,17 +187,27 @@
                 </div>
                 </br>
             </div>
-            <p class="h2">Poprawiona odpowiedź, komentarze oceniającego</p>
+            <div id="autoTestingInterface" hidden="true">
+                <div id="autoTestingInterfaceArea" class="container justify-content-center">
+
+                    <p class="h2">Wynik kompilacji kodu - automatyczne testowanie</p>
+
+                </div>
+            </div>
+
+            <p class="h2">Poprawki do odpowiedzi, komentarze oceniającego</p>
             <div id="answerEditor">
                 <pre id="highlighting"  class="PrismElement" aria-hidden="true">
                     <code id="highlighting-content" class="language-cpp PrismElement h-100 w-100" ><%=corrected_answer%></code>
                 </pre>
-                <textarea id="editing" class="PrismElement" name="correctedAnswer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm"><%=corrected_answer%></textarea>
+                <textarea id="editing" class="PrismElement" name="correctedAnswer" spellcheck="false" oninput="updateAnswer(this.value);sync_scroll(this);" onscroll="sync_scroll(this)" onkeydown="check_tab(this, event);" class="h-100 w-100" form="testForm">
+                    <%=corrected_answer%></textarea>
             </div>
 
             <div>
                 <p class="h2">Ilość zdobytych punktów</p>
-                <input style="width:100px" type="number" class="form-control item" name="score" form="testForm" required="required" min="0" max="<%=task.getScore()%>" defaultValue="<%=score%>" value="<%=score%>">
+                <input style="width:100px" type="number" class="form-control item" name="score" form="testForm" required="required" min="0" max="
+                    <%=task.getScore()%>" defaultValue="<%=score%>" value="<%=score%>">
                 </br>
                 <button style="display:inline-block; " onclick="setTaskPos(<%=taskPos%>);saveGrading()" form ="testForm" class="btn btn-warning">Zapisz punktację za zadanie</button>
             </div>
@@ -159,7 +216,7 @@
             <%
                 int currSum = 0;
                 int totalSum = 0;
-                for(int i=0;i<tasks.size();i++) {
+                for (int i = 0; i < tasks.size(); i++) {
                         currSum += tasks.get(i).getGraded();
                         totalSum += tasks.get(i).getScore();
                 }
@@ -178,7 +235,7 @@
 
     <%}%>
 
-<%}%>
+    <%}%>
 </div>
 </body>
 
@@ -187,6 +244,7 @@
     let taskPos;
     let ws;
     let newLineWatchdog;
+
 
     window.onload = function (){
         setTaskPos(0);
@@ -222,6 +280,76 @@
         this.ws = ws;
     }
 
+    function testCodeAuto() {
+        let testingDiv = document.querySelector("#autoTestingInterfaceArea");
+        testingDiv.innerHTML ="";
+        <% for (int i = 0; i < testCasesInputs.size(); i++) { %>
+
+        if ("WebSocket" in window) {
+            let outputArea = document.createElement("div");
+            document.querySelector("#autoTestingInterface").removeAttribute("hidden");
+            // Let us open a web socket
+
+            let ws = new WebSocket("ws://localhost:5057/socket");
+            setWebSocket(ws)
+
+            ws.onopen = function () {
+
+
+                // Web Socket is connected, send data using send()
+
+                let inputCode = document.querySelector("#originalAnswer").innerHTML;
+                console.log(inputCode);
+
+
+
+                outputArea.style.overflow="hidden";
+                outputArea.classList.add("card-text");
+                outputArea.style.width = "18rem";
+
+
+
+                let outputCard = document.createElement("div");
+                outputCard.classList.add("card");
+                outputCard.classList.add("alert");
+                outputCard.classList.add("alert-success");
+
+                let outputHeader = document.createElement("div");
+                outputHeader.classList.add("card-title");
+                outputHeader.classList.add("h4");
+                outputHeader.innerHTML += "Argumenty wejściowe: "+ "<%=testCasesInputs.get(i)%>" + "\n";
+                outputCard.appendChild(outputHeader);
+
+
+                testingDiv.appendChild(outputCard);
+                outputCard.appendChild(outputArea);
+
+                console.log("sending header request");
+                ws.send("action=testCodeCompile&testId=<%=testId%>&taskId=<%=task.getId()%>&"+inputCode);
+                ws.send("<%=testCasesInputs.get(i)%>");
+
+
+
+            }
+            ws.onmessage = function (evt) {
+
+                let received_msg = evt.data;
+                outputArea.innerHTML +=received_msg;
+                outputArea.focus();
+                console.log("Message is received...: "+ received_msg);
+                setNewLineWatchdog(true)
+            };
+            ws.onclose = function () {
+
+                // websocket is closed.
+                console.log("Connection is closed...");
+            };
+
+        }
+        <% } %>
+
+    }
+
     function testCodeSocket() {
         if ("WebSocket" in window) {
 
@@ -251,7 +379,6 @@
                 document.querySelector("#testOutput").innerHTML +=received_msg;
                 document.querySelector("#testOutput").focus();
                 console.log("Message is received...: "+ received_msg);
-                setNewLineWatchdog(true)
             };
             ws.onclose = function () {
 
@@ -287,7 +414,7 @@
     function cleanMarkdown(text){
         return text.replace(new RegExp("&", "g"), "&").replace(new RegExp("<", "g"), "&lt");
     }
-    <% if(!tasks.isEmpty()){ %>
+    <% if (!tasks.isEmpty()) { %>
     function saveGrading () {
         let baseUrl = "index?action=gradeTask&taskPos="+this.taskPos+"&testId=<%=testId%>&taskId=<%=task.getId()%>";
         let form = document.getElementById("testForm");

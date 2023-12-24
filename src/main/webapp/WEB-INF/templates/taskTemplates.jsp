@@ -72,7 +72,7 @@
     <tr>
         <td class="text-center"><p><%=taskTemplates.get(i).getId()%></p></td>
         <td class="text-center"><p><%=taskTemplates.get(i).getDescription()%></p></td>
-        <td class="text-center"><p><%=taskTemplates.get(i).getAnswer()%></p></td>
+        <td class="text-center"><p><%=taskTemplates.get(i).getTaskCodeBody()%></p></td>
         <td class="text-center"><p><%=taskTemplates.get(i).getScore()%></p></td>
         <td class="text-center"><p><button class="btn btn-warning"><a href="index.jsp?webpage=editTaskTemplate&taskTemplateId=<%=taskTemplates.get(i).getId()%>">Edytuj zadanie</a></button></p></td>
         <td class="text-center"><p><button class="btn btn-danger" onclick="deleteTaskTemplate(<%=taskTemplates.get(i).getId()%>)"> Usuń zadanie</button></p></td>
