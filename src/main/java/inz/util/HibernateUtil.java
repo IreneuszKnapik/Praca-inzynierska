@@ -42,7 +42,7 @@ public class HibernateUtil {
                 configuration.addAnnotatedClass(TaskTemplate.class);
                 configuration.addAnnotatedClass(TaskGroup.class);
                 configuration.addAnnotatedClass(Task.class);
-
+                configuration.addAnnotatedClass(TestCase.class);
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();
 

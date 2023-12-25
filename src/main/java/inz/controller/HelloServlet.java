@@ -223,8 +223,83 @@ public class HelloServlet extends HttpServlet implements WebMvcConfigurer {
                 markTest(request, response);
 
             }
+            else if (action.equals("addTestCase")) {
+                addTestCase(request, response);
+
+            }
+            else if (action.equals("updateTestCase")) {
+                updateTestCase(request, response);
+
+            }
+            else if (action.equals("deleteTestCase")) {
+                deleteTestCase(request, response);
+
+            }
 
         }
+    }
+
+    private void addTestCase(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+
+        TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
+        TestCase testCase = new TestCase();
+
+        testCase.setExpectedOutput(request.getParameter("outputs"));
+        testCase.setInputs(request.getParameter("inputs"));
+        String ttid = request.getParameter("tasktemplate_id").trim();
+
+
+        try{
+            int ttidint = Integer.parseInt(ttid);
+            testCase.setTasktemplate_id(ttidint);
+        }
+        catch(NumberFormatException e){
+            System.out.println("tasktemplate_id: "+ ttid);
+        }
+
+
+
+
+        taskTemplateDao.saveTestCase(testCase);
+        int id = testCase.getId();
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(id);
+    }
+    private void updateTestCase(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+
+        TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
+        int testCaseId = Integer.parseInt(request.getParameter("testCase_id").trim());
+        System.out.println("testCase_id: " + testCaseId);
+
+        TestCase testCase = taskTemplateDao.getTestCaseById(testCaseId);
+        String out2 = request.getParameter("outputs");
+        System.out.println("outputs: " +out2);
+        String inp2 = request.getParameter("inputs");
+        System.out.println("inputs: " +inp2);
+        testCase.setExpectedOutput( out2);
+        testCase.setInputs(inp2);
+
+        taskTemplateDao.updateTestCase(testCase);
+
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write("edited="+true);
+    }
+
+    private void deleteTestCase(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        TaskTemplateDao taskTemplateDao = new TaskTemplateDao();
+        int testCaseId =0;
+        try{
+            testCaseId = Integer.parseInt(request.getParameter("testCase_id").trim());
+        }
+        catch(NumberFormatException e){
+            System.out.println("testCase_id: ");
+        }
+
+        taskTemplateDao.deleteTestCaseById(testCaseId);
+
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write("deleted="+true);
+
     }
 
     private void logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

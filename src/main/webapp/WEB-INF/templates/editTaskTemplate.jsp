@@ -15,6 +15,8 @@
     String taskTemplateId = request.getParameter("taskTemplateId");
     TaskTemplate taskTemplate = null;
     taskTemplate = taskTemplateDao.getTaskTemplateById(Integer.parseInt(taskTemplateId));
+
+    List<TestCase> testCases = taskTemplateDao.getTestCasesByTaskTemplateId(Integer.parseInt(taskTemplateId));
 %>
 
 <script>
@@ -38,6 +40,11 @@
     <style><%@include file="/static/prism/prism.css"%></style>
     <style><%@include file="/static/css/test.css"%></style>
     <title><%=currentUser.getUsername() %> - C++ testing portal</title>
+    <style>
+        td > p {
+            word-break: break-all;
+        }
+    </style>
 </head>
 <body>
 
@@ -64,6 +71,40 @@
             <p class="h2">Punkty za zadanie</p>
             <input style="width:100px" type="number" class="form-control item" name="score" form="addTaskForm" required="required" defaultValue="<%=taskTemplate.getScore()%>" value="<%=taskTemplate.getScore()%>">
         </div>
+        <div>
+            <p class="h2">Przypadki do testów automatycznych</p>
+            <p class="h3">Dodaj nowy przypadek</p>
+            <table class="table table-active word-break">
+                <thead class="thead-dark">
+                    <th scope="col" >Zestaw wejść do programu</th>
+                    <th scope="col" >Oczekiwana wartość na wyjściu </th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="width:40%">
+                        <textarea id="testCaseInputs" style="height: 100px; width:100%;overflow: scroll;resize:none"></textarea>
+                    </td>
+                    <td style="width:40%">
+                        <textarea id="testCaseOutputs" style="height: 100px; width:100%;overflow: scroll;resize:none"></textarea>
+                    </td>
+                    <td><button type="button" class="btn btn-success" onclick="addTestCase(document.querySelector('#testCaseInputs'),document.querySelector('#testCaseOutputs'))"> Dodaj przypadek</button> </td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="h3">Lista testowanych przypadków</p>
+            <table class="table table-active word-break">
+                <thead class="thead-dark">
+                <th scope="col" >Id</th>
+                <th scope="col" >Zestaw wejść do programu</th>
+                <th scope="col" >Oczekiwana wartość na wyjściu </th>
+                </thead>
+                <tbody id="testCaseList">
+
+                </tbody>
+            </table>
+        </div>
+
+
     </br>
         <div class="form-group">
             <button onclick="saveTaskTemplate()" class="btn btn-success">Zapisz zmiany</button>
@@ -75,6 +116,136 @@
 </body>
 
 <script>
+
+    function buildNewTestCase(Id,inputs,outputs){
+        let tr = document.createElement("tr");
+        document.querySelector("#testCaseList").appendChild(tr);
+
+        let td_id = document.createElement("td");
+        td_id.innerHTML = Id;
+        tr.appendChild(td_id);
+
+        let td_inputs = document.createElement("td");
+        td_inputs.style.width = "40%";
+        tr.appendChild(td_inputs);
+
+        let td_inputs_textarea = document.createElement("textarea");
+        td_inputs_textarea.style.height="100px";
+        td_inputs_textarea.style.width="100%";
+        td_inputs_textarea.style.overflow = "scroll";
+        td_inputs_textarea.style.resize = "none";
+
+        td_inputs.appendChild(td_inputs_textarea);
+
+        td_inputs_textarea.value = inputs;
+        let td_outputs = document.createElement("td");
+        td_outputs.style.width = "40%";
+        tr.appendChild(td_outputs);
+
+        let td_outputs_textarea = document.createElement("textarea");
+        td_outputs_textarea.style.height="100px";
+        td_outputs_textarea.style.width="100%";
+        td_outputs_textarea.style.overflow = "scroll";
+        td_outputs_textarea.style.resize = "none";
+        td_outputs.appendChild(td_outputs_textarea);
+
+        td_outputs_textarea.value = outputs;
+
+        let td_edit = document.createElement("td");
+        let td_delete = document.createElement("td");
+
+        tr.appendChild(td_edit);
+        tr.appendChild(td_delete);
+
+        let td_edit_button = document.createElement("button");
+        let td_delete_button = document.createElement("button");
+
+        td_edit_button.type="button";
+        td_delete_button.type="button";
+
+        td_edit_button.classList.add("btn");
+        td_edit_button.classList.add("btn-warning");
+
+        td_delete_button.classList.add("btn");
+        td_delete_button.classList.add("btn-danger");
+
+        td_edit_button.innerHTML ="Zapisz zmiany";
+        td_delete_button.innerHTML ="Usuń przypadek";
+
+        td_edit.appendChild(td_edit_button);
+        td_delete.appendChild(td_delete_button);
+
+        td_edit_button.addEventListener("click",()=>{
+            updateTestCase(Id,td_inputs_textarea,td_outputs_textarea)
+        })
+        td_delete_button.addEventListener("click",()=> {
+            removeTestCase(Id,tr)
+        })
+
+
+    }
+
+    function addTestCase(inputs, outputs) {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                buildNewTestCase(this.responseText,inputs.value,outputs.value);
+            }
+        };
+
+        let formData = new FormData;
+        formData.append("outputs",outputs.value);
+        formData.append("inputs",inputs.value);
+        formData.append("tasktemplate_id",<%=taskTemplateId%>);
+
+        let request = "http://localhost:8080/Praca_inzynierska_war_exploded/index?action=addTestCase";
+        xmlhttp.open("POST", request, true);
+        xmlhttp.send(formData);
+
+    }
+
+    function updateTestCase(id, inputs, outputs){
+
+        console.log(inputs);
+        console.log(inputs.value);
+        console.log(outputs);
+        console.log(outputs.value);
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+            }
+        };
+
+        let formData = new FormData;
+        formData.append("outputs",outputs.value);
+        formData.append("inputs",inputs.value);
+        formData.append("testCase_id",id);
+
+        let request = "http://localhost:8080/Praca_inzynierska_war_exploded/index?action=updateTestCase";
+        xmlhttp.open("POST", request, true);
+        xmlhttp.send(formData);
+    }
+    function removeTestCase(id,tr){
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                tr.remove();
+            }
+        };
+
+        let formData = new FormData;
+        formData.append("testCase_id",id);
+
+        let request = "http://localhost:8080/Praca_inzynierska_war_exploded/index?action=deleteTestCase";
+        xmlhttp.open("POST", request, true);
+        xmlhttp.send(formData);
+    }
+
 
     function getLoaded(){
         return this.loaded;
@@ -94,6 +265,14 @@
         let editing = document.querySelector("#editing");
         updateAnswer(editing.value,"editing","highlightingContent");
         sync_scroll(editing,"highlighting");
+
+        <% for(int i=0;i<testCases.size();i++) { %>
+        inputsFromDB = <%=new String( "\"" +testCases.get(i).getInputs()) + "\""%>;
+        outputsFromDB = <%= new String( "\"" + testCases.get(i).getExpectedOutput()) +  "\""%>;
+        id = <%=testCases.get(i).getId()%>;
+
+        buildNewTestCase(id,inputsFromDB,outputsFromDB);
+        <%}%>
 
         setLoaded(true);
         Prism.highlightAll();

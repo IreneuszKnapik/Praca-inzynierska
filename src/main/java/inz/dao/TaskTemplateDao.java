@@ -2,6 +2,7 @@ package inz.dao;
 
 import inz.model.TaskGroupTemplate;
 import inz.model.TaskTemplate;
+import inz.model.TestCase;
 import inz.util.HibernateUtil;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -160,4 +161,133 @@ public class TaskTemplateDao {
         }
     }
 
+    public void saveTestCase(TestCase testCase) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the user object
+            session.save(testCase);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                e.printStackTrace();
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public void updateTestCase(TestCase testCase) {
+
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // start a transaction
+            transaction = session.beginTransaction();
+            // save the user object
+            session.update(testCase);
+            // commit transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteTestCaseById(int testCaseID) {
+        Session session = null;
+        Transaction transaction = null;
+
+
+        try {
+
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            TestCase t = session.get(TestCase.class,testCaseID);
+            if(t != null){
+                session.delete(t);
+            }
+
+            transaction.commit();
+
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+
+        finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+
+    }
+
+
+    public List <TestCase> getTestCasesByTaskTemplateId(Integer taskTemplateID) {
+
+        Session session = null;
+        List<TestCase> testCases = null;
+
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            // start a transaction
+            Transaction transaction = session.beginTransaction();
+
+            Query<TestCase> query= session.createQuery("FROM TestCase t WHERE t.tasktemplate_id=:taskTemplateID");
+            query.setParameter("taskTemplateID",taskTemplateID);
+
+
+            testCases = query.list();
+
+
+            transaction.commit();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+
+        }
+
+        return testCases;
+
+    }
+
+
+
+    public TestCase getTestCaseById(Integer testCaseId) {
+
+
+        TestCase testCase = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession();){
+
+            // start a transaction
+            Transaction transaction = session.beginTransaction();
+
+            Query<TestCase> query= session.createQuery("FROM TestCase t WHERE t.id=:testCaseId");
+            query.setParameter("testCaseId",testCaseId);
+
+
+            testCase = query.uniqueResult();
+
+            transaction.commit();
+        }
+
+        catch (Exception e){
+            e.printStackTrace();
+
+        }
+
+        return testCase;
+
+    }
 }
